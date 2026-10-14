@@ -23,7 +23,7 @@ nav a { margin-right:14px }
 <body>
 <header><div class="in"><h1>Set<b>First</b></h1><p>L'app per fresatori, tornitori e operatori laser · The app for machinists, turners and laser operators</p></div></header>
 <main>
-<nav><a href="#it">Privacy (IT)</a><a href="#en">Privacy (EN)</a><a href="termini.html">Condizioni d'uso · Terms</a><a href="#support">Assistenza / Support</a></nav>
+<nav><a href="#it">Privacy (IT)</a><a href="#en">Privacy (EN)</a><a href="termini.html">Condizioni d'uso · Terms</a><a href="#rete">Collegamento in rete · Network</a><a href="#support">Assistenza / Support</a></nav>
 
 <section id="it">
 <h2>Informativa sulla privacy</h2>
@@ -67,6 +67,65 @@ nav a { margin-right:14px }
 <p>The app is designed for professionals and is not directed at children.</p>
 <h3>Contact</h3>
 <p>For privacy questions write to <a href="mailto:simone.mazzer@yahoo.it">simone.mazzer@yahoo.it</a>.</p>
+</section>
+
+<section id="rete">
+<h2>Collegamento in rete con la macchina</h2>
+<p>SetFirst salva il programma in una cartella di rete che la macchina legge. Telefono, macchina e PC devono essere sulla stessa rete dell'officina.</p>
+<h3>A · La macchina condivide la sua cartella (Haas NGC)</h3>
+<ol>
+<li>In macchina: SETTING › Rete › Connessione cablata. Rete cablata abilitata = ATTIVO, poi annota l'Indirizzo IP.</li>
+<li>SETTING › Rete › Cond. rete: Cond. rete locale abilit. = ATTIVO e Sicurezza cond. rete locale = ATTIVO.</li>
+<li>Nome utente loc: di solito <b>haas</b>. Password loc: scrivi la password, premi ENTER e poi F4 (Applica modif.). Se non la accetta, spegni e riaccendi la macchina e ripeti.</li>
+<li>In SetFirst: Officina › Macchine › la macchina › Cartella di rete: indirizzo = IP della macchina, cartella = User Data.</li>
+<li>Sull'iPhone: app File › ··· › Connetti al server › smb://IP-della-macchina › <b>Utente registrato</b> › haas e la password della macchina.</li>
+<li>In SetFirst: Manda in macchina › Salva nella cartella di rete › scegli User Data. In macchina: LIST PROGRAM › User Data.</li>
+</ol>
+<h3>B · Cartella sul PC o sul NAS (condivisione remota)</h3>
+<ol>
+<li>Sul PC Windows: crea la cartella (per esempio C:\CNC), tasto destro › Proprietà › Condivisione › Condivisione avanzata › Autorizzazioni: all'utente metti Modifica (controlla anche la scheda Sicurezza).</li>
+<li>Indirizzo del PC: Impostazioni › Rete e Internet › Proprietà › Indirizzo IPv4.</li>
+<li>In macchina (Haas NGC): SETTING › Rete › Cond. rete › Condiv. rete remota abilit. = ATTIVO, poi nome server (IP del PC), cartella, nome utente e password del PC › F4.</li>
+<li>Sull'iPhone: File › ··· › Connetti al server › smb://IP-del-PC/CNC › Utente registrato › utente e password del PC.</li>
+<li>In macchina: LIST PROGRAM › Net Share.</li>
+</ol>
+<h3>Se qualcosa non va</h3>
+<ul>
+<li><b>Salva grigio o «Sola lettura»:</b> sei collegato come Ospite o l'utente non può scrivere. In File tieni premuto sul server › Disconnetti e ricollegati come Utente registrato.</li>
+<li><b>«Nome utente e password non validi»:</b> nome minuscolo e senza spazi. Su Haas la password vale solo con Sicurezza cond. rete locale = ATTIVO; se non la prende, riavvia la macchina.</li>
+<li><b>Due server in File:</b> salva in quello giusto (la macchina o il PC che la macchina legge).</li>
+<li><b>La macchina non vede la cartella del PC:</b> controlla cavo, indirizzo e rete. Lascia SMBv1 e NTLMv1 su INATTIVO.</li>
+<li><b>Cartella con spazi (User Data):</b> collegati solo all'IP e scegli la cartella dall'elenco.</li>
+<li>Senza rete: Manda in macchina › Chiavetta USB.</li>
+</ul>
+<h2 style="margin-top:22px">Network connection to the machine</h2>
+<p>SetFirst saves the program to a network folder the machine reads. Phone, machine and PC must be on the same shop network.</p>
+<h3>A · The machine shares its own folder (Haas NGC)</h3>
+<ol>
+<li>At the machine: SETTING › Network › Wired Connection. Wired Network Enabled = ON, then note the IP Address.</li>
+<li>SETTING › Network › Net Share: Local Net Share Enabled = ON and Local Net Share Security = ON.</li>
+<li>Local User Name: usually <b>haas</b>. Local Password: type it, press ENTER, then F4 (Apply Changes). If it is not accepted, power-cycle the machine and repeat.</li>
+<li>In SetFirst: Shop › Machines › the machine › Network folder: address = machine IP, folder = User Data.</li>
+<li>On the iPhone: Files › ··· › Connect to Server › smb://machine-IP › <b>Registered User</b> › haas and the machine password.</li>
+<li>In SetFirst: Send to machine › Save to network folder › pick User Data. At the machine: LIST PROGRAM › User Data.</li>
+</ol>
+<h3>B · Folder on the PC or NAS (remote share)</h3>
+<ol>
+<li>On the Windows PC: create the folder (e.g. C:\CNC), right-click › Properties › Sharing › Advanced Sharing › Permissions: give the user Change (check the Security tab too).</li>
+<li>PC address: Settings › Network &amp; Internet › Properties › IPv4 address.</li>
+<li>At the machine (Haas NGC): SETTING › Network › Net Share › Remote Net Share Enabled = ON, then server name (PC IP), folder, PC user name and password › F4.</li>
+<li>On the iPhone: Files › ··· › Connect to Server › smb://PC-IP/CNC › Registered User › PC user and password.</li>
+<li>At the machine: LIST PROGRAM › Net Share.</li>
+</ol>
+<h3>Troubleshooting</h3>
+<ul>
+<li><b>Save is grey or "Read only":</b> you are connected as Guest or the user can't write. In Files, long-press the server › Disconnect and reconnect as Registered User.</li>
+<li><b>"Invalid user name and password":</b> lowercase name, no spaces. On Haas the password only works with Local Net Share Security = ON; if it is not taken, restart the machine.</li>
+<li><b>Two servers in Files:</b> save to the right one (the machine, or the PC the machine reads).</li>
+<li><b>The machine can't see the PC folder:</b> check cable, address and network. Leave SMBv1 and NTLMv1 OFF.</li>
+<li><b>Folder with spaces (User Data):</b> connect to the IP only and pick the folder from the list.</li>
+<li>No network: Send to machine › USB stick.</li>
+</ul>
 </section>
 
 <section id="support">
