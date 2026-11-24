@@ -45,7 +45,7 @@ h1,h2,h3{font-family:"Barlow Condensed",Barlow,sans-serif;letter-spacing:.01em;l
 .hero p.lead{font-size:20px;color:#C9D2D8;margin:18px 0 28px;max-width:34em}
 .cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
 .small{font-size:14px;color:#9AA7AF;margin-top:14px}
-.phone{justify-self:center;width:min(300px,78vw);border-radius:38px;padding:10px;background:#0B0E10;box-shadow:0 40px 80px -30px rgba(0,0,0,.8),0 0 0 2px #2C353C;transform:rotate(3deg)}
+.phone{justify-self:center;width:min(300px,78vw);border-radius:38px;padding:10px;background:#0B0E10;box-shadow:0 40px 80px -30px rgba(0,0,0,.8),0 0 0 2px #2C353C}
 .phone img{width:100%;height:auto;display:block;border-radius:30px}
 /* sezioni */
 section{padding:84px 0}
@@ -91,8 +91,9 @@ footer a{text-decoration:none}
 .hero:after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:44px 44px;-webkit-mask:linear-gradient(180deg,#000,transparent 85%);mask:linear-gradient(180deg,#000,transparent 85%);pointer-events:none}
 .hero .w{position:relative;z-index:1}
 @keyframes glow{from{transform:translate(0,0) scale(1);opacity:.8}to{transform:translate(-140px,80px) scale(1.15);opacity:1}}
-.phone{animation:float 6s ease-in-out infinite}
-@keyframes float{0%,100%{transform:rotate(3deg) translateY(0)}50%{transform:rotate(2deg) translateY(-14px)}}
+.phone{animation:float 6s ease-in-out infinite;will-change:transform;backface-visibility:hidden}
+.phone img{image-rendering:auto;transform:translateZ(0)}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
 .btn.pri{position:relative;overflow:hidden}
 .btn.pri:after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-20deg);animation:shine 4.5s ease-in-out infinite}
 @keyframes shine{0%,70%{left:-60%}100%{left:130%}}
@@ -133,7 +134,7 @@ footer a{text-decoration:none}
   <div class="cta"><a class="btn pri" href="app/" data-ev="cta_hero" data-i="try2">Prova 14 giorni gratis dal browser</a><a class="btn sec" href="https://apps.apple.com/app/id6821307156" target="_blank" rel="noopener" data-ev="appstore_hero" data-i="ios">Scarica per iPhone e iPad</a></div>
   <p class="small" data-i="nocard">Senza account e senza carta. I tuoi dati restano sul tuo dispositivo.</p>
  </div>
- <div class="phone rv"><img src="img/tel_oggi.webp" alt="SetFirst sul telefono: schermata Oggi" width="600" height="1298"></div>
+ <div class="phone rv"><img src="img/tel_oggi.webp" alt="SetFirst sul telefono: schermata Oggi" width="1170" height="2532"></div>
 </div></div>
 
 <section id="cosa"><div class="w">
