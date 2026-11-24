@@ -2536,7 +2536,7 @@ ${P}
 
   /* ---------- l'app applica i blocchi? (solo iPhone/iPad con gli abbonamenti dell'App Store) ---------- */
   function gated() { var x = X(); return !!(x && x.gated()); }
-  function hasSub() { var x = X(); return !!(x && x.subscribed()) || !!(window.SFW && SFW.plan()); }
+  function hasSub() { var x = X(); return !!(x && x.subscribed()) || !!(window.SFW && (SFW.plan() || (SFW.isAdm && SFW.isAdm()))); }
   function hadSub() { var x = X(); return !!(x && x.hadSub()); }
 
   /* ---------- prova gratuita ---------- */
@@ -2843,6 +2843,7 @@ ${P}
     return plan();
   }
   function ent() {
+    if (isAdm()) return { asport: !0, laser: !0 };
     var p = plan(); if (!p) return null;
     if (p.plan === 'tutto') return { asport: !0, laser: !0 };
     if (p.plan === 'asport') return { asport: !0, laser: !1 };
@@ -2901,6 +2902,7 @@ ${P}
       '.sfp-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.sfp-row .btn{flex:1;justify-content:center;min-width:130px}' +
       '.sfp-buy{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.sfp-buy .btn{justify-content:center;flex-direction:column;height:auto;padding:8px 6px;line-height:1.2}.sfp-buy .btn small{font-weight:400;opacity:.85}' +
       '.sfp-ok{border:2px solid var(--brand,#D9621A)}.sfp-legal a{margin-right:12px}' +
+      '.sfp-home{border-left-color:#4A9B6B!important}.sfp-steps{margin:8px 0 4px;padding-left:20px}.sfp-steps li{margin:4px 0;line-height:1.35}.sfg-card .sfp-steps b{display:inline;font-size:inherit;font-family:inherit;letter-spacing:0}' +
       '.sfp-gift,.sfp-adm{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}.sfp-gift input{height:38px;margin:0}.sfp-adm{border-top:2px solid var(--brand,#D9621A)}' +
       '.sfp-admcard{border-left-color:var(--brand,#D9621A)!important;flex-wrap:wrap}.sfp-admcard .btn{flex:none}' +
       '.sfp-sheet{width:min(620px,100%)!important;max-height:90vh;overflow:auto}.sfp-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.sfp-seg{display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 6px}' +
@@ -2918,7 +2920,7 @@ ${P}
     if (x) {
       var p = plan();
       return '<div class="panel sfp-acc' + (p ? ' sfp-ok' : '') + '"><b>' + t.acc + '</b><p class="note" style="margin:4px 0">' + t.as + ' <b>' + esc(x.email) + '</b></p>' +
-        (p ? '<p style="margin:6px 0"><b>' + t.ok + esc(t.plans[p.plan] || p.plan) + '</b>' + (p.exp ? '<span class="note">' + (p.status === 'gift' ? ' · ' + t.giftTill : t.till) + new Date(p.exp).toLocaleDateString(lang()) + '</span>' : '') + '</p>' + (p.status === 'gift' ? '' : '<p class="note">' + t.change + '</p>') : '<p class="note">' + t.none + '</p>') +
+        (p ? '<p style="margin:6px 0"><b>' + t.ok + esc(t.plans[p.plan] || p.plan) + '</b>' + (p.exp ? '<span class="note">' + (p.status === 'gift' ? ' · ' + t.giftTill : t.till) + new Date(p.exp).toLocaleDateString(lang()) + '</span>' : '') + '</p>' + (p.status === 'gift' ? '' : '<p class="note">' + t.change + '</p>') : '<p class="note">' + (isAdm() ? '<b>Accesso completo (amministratore)</b>' : t.none) + '</p>') +
         giftBox() + admBox() +
         '<div class="sfp-row"><button class="btn ghost mini" data-act="sfpOut">' + t.out + '</button></div></div>';
     }
@@ -2975,6 +2977,26 @@ ${P}
       s(KG, c.toUpperCase().slice(0, 20)); u.searchParams.delete('code'); history.replaceState(null, '', u.pathname + (u.search || '') + u.hash);
       setTimeout(function () { var x = document.createElement('button'); x.dataset.act = 'proOpen'; x.style.display = 'none'; document.body.appendChild(x); x.click(); x.remove(); }, 900);
     } catch (e) {}
+  }
+
+  /* ---- «Mettila nella schermata Home» (telefono e tablet, solo se non è già installata) ---- */
+  var BIP = null;
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); BIP = e; render(); });
+  window.addEventListener('appinstalled', function () { s('setfirst.a2hs.v1', { done: 1 }); BIP = null; render(); });
+  function standalone() { try { return navigator.standalone === true || matchMedia('(display-mode: standalone)').matches; } catch (e) { return false; } }
+  function osKind() { var u = navigator.userAgent || ''; if (/iPhone|iPad|iPod/.test(u) || (/Macintosh/.test(u) && navigator.maxTouchPoints > 1)) return 'ios'; if (/Android/.test(u)) return 'and'; return ''; }
+  var HL = {
+    it: { t: 'Mettila nella schermata Home', s: 'Così SetFirst si apre come un’app, a tutto schermo, con la sua icona.', ios: ['Tocca il pulsante <b>Condividi</b> (il quadrato con la freccia in su: in basso in Safari, in alto in Chrome).', 'Scorri e scegli <b>«Aggiungi alla schermata Home»</b>.', 'Premi <b>«Aggiungi»</b>: trovi l’icona SetFirst tra le tue app.'], and: ['Tocca i <b>tre puntini ⋮</b> in alto a destra in Chrome.', 'Scegli <b>«Aggiungi a schermata Home»</b> (o «Installa app»).', 'Conferma con <b>«Installa»</b> o <b>«Aggiungi»</b>.'], inst: 'Installa SetFirst', done: 'Fatto', later: 'Non ora' },
+    en: { t: 'Add it to your Home Screen', s: 'SetFirst then opens like an app, full screen, with its own icon.', ios: ['Tap the <b>Share</b> button (the square with the up arrow: at the bottom in Safari, at the top in Chrome).', 'Scroll and choose <b>“Add to Home Screen”</b>.', 'Tap <b>“Add”</b>: the SetFirst icon is now with your apps.'], and: ['Tap the <b>three dots ⋮</b> at the top right in Chrome.', 'Choose <b>“Add to Home screen”</b> (or “Install app”).', 'Confirm with <b>“Install”</b> or <b>“Add”</b>.'], inst: 'Install SetFirst', done: 'Done', later: 'Not now' }
+  };
+  function homeCard() {
+    var k = osKind(), st = g('setfirst.a2hs.v1') || {};
+    if (!k || standalone() || st.done || (st.later && Date.now() < st.later)) return '';
+    var h = HL[lang()] || HL.en, steps = h[k];
+    return '<div class="panel sfg-card sfp-home"><div class="sfg-t"><b>' + h.t + '</b><p class="note">' + h.s + '</p>' +
+      (k === 'and' && BIP ? '' : '<ol class="sfp-steps">' + steps.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ol>') +
+      '<div class="sfp-row">' + (k === 'and' && BIP ? '<button class="btn primary mini" data-act="sfpInstall">' + h.inst + '</button>' : '') +
+      '<button class="btn mini' + (k === 'and' && BIP ? ' ghost' : '') + '" data-act="sfpHomeDone">' + h.done + '</button><button class="btn ghost mini" data-act="sfpHomeLater">' + h.later + '</button></div></div></div>';
   }
 
   /* ---- pannello di Simone: i suoi dispositivi non contano, contatori, codici ---- */
@@ -3129,6 +3151,9 @@ ${P}
       } catch (err) { toast(/token|otp|expired|invalid/i.test(err.message) ? t.errCode : err.message); } finally { b.disabled = false; }
       return;
     }
+    if (act === 'sfpInstall') { if (BIP) { BIP.prompt(); BIP.userChoice.then(function (c) { if (c && c.outcome === 'accepted') s('setfirst.a2hs.v1', { done: 1 }); BIP = null; render(); }); } return; }
+    if (act === 'sfpHomeDone') { s('setfirst.a2hs.v1', { done: 1 }); render(); return; }
+    if (act === 'sfpHomeLater') { s('setfirst.a2hs.v1', { later: Date.now() + 7 * 864e5 }); render(); return; }
     if (act === 'sfpGift') return redeem(b);
     if (act === 'sfpClose') return closeSheet();
     if (act === 'sfpStats') return statsSheet(Number(b.dataset.v || 7));
@@ -3154,7 +3179,7 @@ ${P}
     } finally { b.disabled = false; }
   }, true);
 
-  window.SFW = { ent: ent, plan: plan, refresh: refreshPlan, webPlans: webPlans, sess: sess, waiting: function () { return !!waiting; }, admCard: admCard, isAdm: isAdm };
+  window.SFW = { ent: ent, plan: plan, refresh: refreshPlan, webPlans: webPlans, sess: sess, waiting: function () { return !!waiting; }, admCard: function () { return admCard() + homeCard(); }, isAdm: isAdm };
   css();
   refreshPlan().then(function (p) { if (p) render(); });
   checkAdm().then(function (a) { if (a) render(); });
