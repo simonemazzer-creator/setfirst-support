@@ -2631,7 +2631,7 @@ ${P}
     var en = (document.documentElement.lang || 'it').slice(0, 2) !== 'it';
     return '<a class="panel sfg-guide" href="https://app.setfirst.app/guida.html' + (en ? '?lang=en' : '') + '" target="_blank" rel="noopener"><span class="sfg-gi">?</span><span><b>' + (en ? 'Guide: how to use and set up SetFirst' : 'Guida: come si usa e come si imposta') + '</b><br><span class="note">' + (en ? 'Shop and machines, programs, laser and nesting, quotes' : 'Officina e macchine, programmi, laser e incastro, preventivi') + '</span></span><span class="sfg-ga">›</span></a>';
   }
-  function hubCard() { return hubCard_() + guide(); }
+  function hubCard() { return (window.SFW && SFW.admCard ? SFW.admCard() : '') + hubCard_() + guide(); }
   function hubCard_() {
     if (!gated() || hasSub()) return '';
     if (ended()) return '<div class="panel sfg-card end"><div class="sfg-t"><b>' + T.endT + '</b><p class="note">' + T.endS + '</p></div><button class="btn mini primary" data-act="proOpen">' + T.choose + '</button></div>' + missCard();
@@ -2799,10 +2799,10 @@ ${P}
     asport: { m: 'pri_01m8718vc0r4p53n930cnenhdt', y: 'pri_01m8719tvd7ywdv2r03j3e0bwy' },
     laser: { m: 'pri_01m871b4bmt90xxz05hsmczzw6', y: 'pri_01m871c6xzz35qszv7epfajbrg' } } };
   var PRICE = { tutto: ['4,99 €', '39,99 €'], asport: ['2,99 €', '24,99 €'], laser: ['2,99 €', '24,99 €'] };
-  var KS = 'setfirst.sess.v1', KP = 'setfirst.plan.v1';
+  var KS = 'setfirst.sess.v1', KP = 'setfirst.plan.v1', KA = 'setfirst.adm.v1', KG = 'setfirst.gift.v1';
   var L = {
-    it: { acc: 'Il tuo account', accS: 'Serve per abbonarti dal computer: il piano resta legato alla tua email e vale su tutti i tuoi browser.', mail: 'Email', pw: 'Password (almeno 8 caratteri)', in: 'Accedi', up: 'Crea account', forgot: 'Password dimenticata?', out: 'Esci', as: 'Sei entrato come', m: 'Mensile', y: 'Annuale', buy: 'Prova 14 giorni gratis', perM: '/mese', perY: '/anno', trialN: '14 giorni gratis, poi paghi con carta, PayPal o Apple Pay. Disdici prima e non paghi nulla. IVA inclusa.', mor: 'Pagamenti gestiti da Paddle.com, rivenditore autorizzato.', terms: 'Condizioni', refund: 'Rimborsi', wait: 'Pagamento ricevuto: attivo il piano…', ok: 'Piano attivo: ', none: 'Nessun piano attivo su questo account.', have: 'Hai già il piano ', till: ' fino al ', change: 'Per cambiare piano o disdire usa il link nella ricevuta di Paddle, o scrivi a info@setfirst.app.', loginFirst: 'Entra o crea l’account per continuare.', errMail: 'Scrivi un’email valida', errPw: 'La password deve avere almeno 8 caratteri', errLogin: 'Email o password non corretti', errExists: 'Questa email ha già un account: premi Accedi', sent: 'Ti abbiamo mandato un codice via email (guarda anche nello spam).', code: 'Codice dall’email', newpw: 'Nuova password (almeno 8 caratteri)', save: 'Salva la nuova password', back: 'Annulla', pwok: 'Password cambiata: sei dentro.', errCode: 'Codice non valido o scaduto', slow: 'Il pagamento è andato a buon fine; il piano si attiva entro qualche minuto. Se non lo vedi, ricarica la pagina.', iosT: 'Hai un iPhone o un iPad?', iosS: 'Puoi abbonarti anche dall’app (abbonamento separato, gestito da Apple).', ios: 'App per iPhone e iPad', plans: { tutto: 'Tutto incluso', asport: 'Asportazione', laser: 'Laser e lamiera' } },
-    en: { acc: 'Your account', accS: 'You need it to subscribe on a computer: the plan stays tied to your email and works in all your browsers.', mail: 'Email', pw: 'Password (at least 8 characters)', in: 'Sign in', up: 'Create account', forgot: 'Forgot password?', out: 'Sign out', as: 'Signed in as', m: 'Monthly', y: 'Yearly', buy: 'Try 14 days free', perM: '/month', perY: '/year', trialN: '14 days free, then you pay by card, PayPal or Apple Pay. Cancel before and you pay nothing. VAT included.', mor: 'Payments handled by Paddle.com, our authorised reseller.', terms: 'Terms', refund: 'Refunds', wait: 'Payment received: activating your plan…', ok: 'Plan active: ', none: 'No active plan on this account.', have: 'You already have ', till: ' until ', change: 'To change plan or cancel, use the link in your Paddle receipt or write to info@setfirst.app.', loginFirst: 'Sign in or create your account to continue.', errMail: 'Enter a valid email', errPw: 'The password needs at least 8 characters', errLogin: 'Wrong email or password', errExists: 'This email already has an account: press Sign in', sent: 'We emailed you a code (check spam too).', code: 'Code from the email', newpw: 'New password (at least 8 characters)', save: 'Save new password', back: 'Cancel', pwok: 'Password changed: you are signed in.', errCode: 'Invalid or expired code', slow: 'Payment done; the plan activates within a few minutes. If you do not see it, reload the page.', iosT: 'Have an iPhone or iPad?', iosS: 'You can also subscribe in the app (separate subscription, managed by Apple).', ios: 'iPhone and iPad app', plans: { tutto: 'All-inclusive', asport: 'Machining', laser: 'Laser & sheet metal' } }
+    it: { acc: 'Il tuo account', accS: 'Serve per abbonarti dal computer: il piano resta legato alla tua email e vale su tutti i tuoi browser.', mail: 'Email', pw: 'Password (almeno 8 caratteri)', in: 'Accedi', up: 'Crea account', forgot: 'Password dimenticata?', out: 'Esci', as: 'Sei entrato come', m: 'Mensile', y: 'Annuale', buy: 'Prova 14 giorni gratis', perM: '/mese', perY: '/anno', trialN: '14 giorni gratis, poi paghi con carta, PayPal o Apple Pay. Disdici prima e non paghi nulla. IVA inclusa.', mor: 'Pagamenti gestiti da Paddle.com, rivenditore autorizzato.', terms: 'Condizioni', refund: 'Rimborsi', wait: 'Pagamento ricevuto: attivo il piano…', ok: 'Piano attivo: ', none: 'Nessun piano attivo su questo account.', have: 'Hai già il piano ', till: ' fino al ', change: 'Per cambiare piano o disdire usa il link nella ricevuta di Paddle, o scrivi a info@setfirst.app.', loginFirst: 'Entra o crea l’account per continuare.', errMail: 'Scrivi un’email valida', errPw: 'La password deve avere almeno 8 caratteri', errLogin: 'Email o password non corretti', errExists: 'Questa email ha già un account: premi Accedi', sent: 'Ti abbiamo mandato un codice via email (guarda anche nello spam).', code: 'Codice dall’email', newpw: 'Nuova password (almeno 8 caratteri)', save: 'Salva la nuova password', back: 'Annulla', pwok: 'Password cambiata: sei dentro.', errCode: 'Codice non valido o scaduto', slow: 'Il pagamento è andato a buon fine; il piano si attiva entro qualche minuto. Se non lo vedi, ricarica la pagina.', iosT: 'Hai un iPhone o un iPad?', iosS: 'Puoi abbonarti anche dall’app (abbonamento separato, gestito da Apple).', ios: 'App per iPhone e iPad', giftT: 'Hai un codice regalo SetFirst?', giftPh: 'SF-XXXX-XXXX', giftGo: 'Usa il codice', giftTill: 'Regalo attivo fino al ', giftR: { ok: 'Codice attivato: ', bad: 'Codice non valido', used: 'Questo codice è già stato usato', mine: 'Hai già usato questo codice', old: 'Codice scaduto', wait: 'Troppi tentativi: riprova tra un’ora', auth: 'Entra o crea l’account per usare il codice.' }, giftLogin: 'Hai un codice regalo? Entra o crea l’account qui sopra e poi inseriscilo:', plans: { tutto: 'Tutto incluso', asport: 'Asportazione', laser: 'Laser e lamiera' } },
+    en: { acc: 'Your account', accS: 'You need it to subscribe on a computer: the plan stays tied to your email and works in all your browsers.', mail: 'Email', pw: 'Password (at least 8 characters)', in: 'Sign in', up: 'Create account', forgot: 'Forgot password?', out: 'Sign out', as: 'Signed in as', m: 'Monthly', y: 'Yearly', buy: 'Try 14 days free', perM: '/month', perY: '/year', trialN: '14 days free, then you pay by card, PayPal or Apple Pay. Cancel before and you pay nothing. VAT included.', mor: 'Payments handled by Paddle.com, our authorised reseller.', terms: 'Terms', refund: 'Refunds', wait: 'Payment received: activating your plan…', ok: 'Plan active: ', none: 'No active plan on this account.', have: 'You already have ', till: ' until ', change: 'To change plan or cancel, use the link in your Paddle receipt or write to info@setfirst.app.', loginFirst: 'Sign in or create your account to continue.', errMail: 'Enter a valid email', errPw: 'The password needs at least 8 characters', errLogin: 'Wrong email or password', errExists: 'This email already has an account: press Sign in', sent: 'We emailed you a code (check spam too).', code: 'Code from the email', newpw: 'New password (at least 8 characters)', save: 'Save new password', back: 'Cancel', pwok: 'Password changed: you are signed in.', errCode: 'Invalid or expired code', slow: 'Payment done; the plan activates within a few minutes. If you do not see it, reload the page.', iosT: 'Have an iPhone or iPad?', iosS: 'You can also subscribe in the app (separate subscription, managed by Apple).', ios: 'iPhone and iPad app', giftT: 'Have a SetFirst gift code?', giftPh: 'SF-XXXX-XXXX', giftGo: 'Use code', giftTill: 'Gift active until ', giftR: { ok: 'Code activated: ', bad: 'Invalid code', used: 'This code has already been used', mine: 'You already used this code', old: 'Code expired', wait: 'Too many attempts: try again in an hour', auth: 'Sign in or create your account to use the code.' }, giftLogin: 'Have a gift code? Sign in or create your account above, then enter it:', plans: { tutto: 'All-inclusive', asport: 'Machining', laser: 'Laser & sheet metal' } }
   };
   function lang() { var l = (document.documentElement.lang || navigator.language || 'it').slice(0, 2); return L[l] ? l : 'en'; }
   function T() { return L[lang()]; }
@@ -2900,7 +2900,17 @@ ${P}
     st.textContent = '.sfp-acc input{width:100%;height:42px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:0 10px;font:inherit;margin:4px 0}' +
       '.sfp-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.sfp-row .btn{flex:1;justify-content:center;min-width:130px}' +
       '.sfp-buy{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.sfp-buy .btn{justify-content:center;flex-direction:column;height:auto;padding:8px 6px;line-height:1.2}.sfp-buy .btn small{font-weight:400;opacity:.85}' +
-      '.sfp-ok{border:2px solid var(--brand,#D9621A)}.sfp-legal a{margin-right:12px}';
+      '.sfp-ok{border:2px solid var(--brand,#D9621A)}.sfp-legal a{margin-right:12px}' +
+      '.sfp-gift,.sfp-adm{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}.sfp-gift input{height:38px;margin:0}.sfp-adm{border-top:2px solid var(--brand,#D9621A)}' +
+      '.sfp-admcard{border-left-color:var(--brand,#D9621A)!important;flex-wrap:wrap}.sfp-admcard .btn{flex:none}' +
+      '.sfp-sheet{width:min(620px,100%)!important;max-height:90vh;overflow:auto}.sfp-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.sfp-seg{display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 6px}' +
+      '.sfp-kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px}.sfp-kpi{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;background:var(--bg)}.sfp-kpi span{font-size:13px;opacity:.75}.sfp-kpi b{font-size:28px;line-height:1.15;font-family:var(--display,inherit)}.sfp-kpi small{opacity:.7}' +
+      '.sfp-box{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--bg);margin-top:10px}.sfp-kpis{margin-top:4px}.sfp-lbl{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em;opacity:.7;margin-bottom:4px;font-weight:600}.sfp-li{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid var(--line)}.sfp-li:last-child{border-bottom:0}' +
+      '.sfp-leg{font-size:12px;opacity:.8;display:flex;align-items:center;gap:6px;margin-bottom:4px}.sfp-leg i{width:10px;height:10px;border-radius:3px;display:inline-block;margin-left:6px}.c1{background:#D9621A}.c2{background:#3B82C4}.c3{background:#4A9B6B}' +
+      '.sfp-bars{display:flex;align-items:flex-end;gap:3px;height:96px;overflow-x:auto}.sfp-day{flex:1;min-width:14px;display:flex;flex-direction:column;align-items:center;gap:2px}.sfp-col{display:flex;align-items:flex-end;gap:1px;height:72px}.sfp-col span{width:4px;border-radius:2px}.sfp-day small{font-size:10px;opacity:.6}' +
+      '.sfp-form{display:grid;grid-template-columns:1fr 1fr;gap:8px}.sfp-form label{display:flex;flex-direction:column;font-size:13px;gap:3px}.sfp-form .w{grid-column:1/-1}.sfp-form select,.sfp-form input{height:40px;border-radius:10px;border:1px solid var(--line);background:var(--panel,#fff);color:var(--ink);padding:0 8px;font:inherit}' +
+      '.sfp-new{border:2px solid var(--brand,#D9621A)}.sfp-new textarea{width:100%;font-family:ui-monospace,Menlo,monospace;font-size:13px;border-radius:10px;border:1px solid var(--line);padding:8px;background:var(--panel,#fff);color:var(--ink)}' +
+      '.sfp-code{display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px;padding:8px 0;border-bottom:1px solid var(--line)}.sfp-cm b{white-space:nowrap}.sfp-code:last-child{border-bottom:0}.sfp-cm{flex:1 1 160px;min-width:0;display:flex;flex-direction:column}.sfp-cm b{font-family:ui-monospace,Menlo,monospace;letter-spacing:1px}.sfp-cm small,.sfp-cr{opacity:.75}.sfp-cr{text-align:right}';
     document.head.appendChild(st);
   }
   function accBox() {
@@ -2908,7 +2918,8 @@ ${P}
     if (x) {
       var p = plan();
       return '<div class="panel sfp-acc' + (p ? ' sfp-ok' : '') + '"><b>' + t.acc + '</b><p class="note" style="margin:4px 0">' + t.as + ' <b>' + esc(x.email) + '</b></p>' +
-        (p ? '<p style="margin:6px 0"><b>' + t.ok + esc(t.plans[p.plan] || p.plan) + '</b>' + (p.exp ? '<span class="note">' + t.till + new Date(p.exp).toLocaleDateString(lang()) + '</span>' : '') + '</p><p class="note">' + t.change + '</p>' : '<p class="note">' + t.none + '</p>') +
+        (p ? '<p style="margin:6px 0"><b>' + t.ok + esc(t.plans[p.plan] || p.plan) + '</b>' + (p.exp ? '<span class="note">' + (p.status === 'gift' ? ' · ' + t.giftTill : t.till) + new Date(p.exp).toLocaleDateString(lang()) + '</span>' : '') + '</p>' + (p.status === 'gift' ? '' : '<p class="note">' + t.change + '</p>') : '<p class="note">' + t.none + '</p>') +
+        giftBox() + admBox() +
         '<div class="sfp-row"><button class="btn ghost mini" data-act="sfpOut">' + t.out + '</button></div></div>';
     }
     if (forgot) return '<div class="panel sfp-acc"><b>' + t.acc + '</b><p class="note" style="margin:4px 0 6px">' + t.sent + ' <b>' + esc(forgot) + '</b></p>' +
@@ -2917,7 +2928,7 @@ ${P}
     return '<div class="panel sfp-acc"><b>' + t.acc + '</b><p class="note" style="margin:4px 0 6px">' + t.accS + '</p>' +
       '<input id="sfpmail" type="email" autocomplete="email" placeholder="' + t.mail + '"><input id="sfppw" type="password" autocomplete="current-password" placeholder="' + t.pw + '">' +
       '<div class="sfp-row"><button class="btn primary mini" data-act="sfpIn">' + t.in + '</button><button class="btn ghost mini" data-act="sfpUp">' + t.up + '</button></div>' +
-      '<p class="note" style="margin:8px 0 0"><a href="#" data-act="sfpForgot">' + t.forgot + '</a></p></div>';
+      '<p class="note" style="margin:8px 0 0"><a href="#" data-act="sfpForgot">' + t.forgot + '</a></p>' + (g(KG) ? '<p class="note" style="margin:8px 0 0"><b>' + t.giftLogin + '</b> ' + esc(g(KG)) + '</p>' : '') + '</div>';
   }
   function buyRow(k) {
     var t = T(), pr = PRICE[k];
@@ -2941,6 +2952,165 @@ ${P}
     return d.innerHTML;
   }
 
+  /* ---- codice regalo (per tutti gli account) ---- */
+  function giftBox() {
+    var t = T(), p = plan(); if (p && p.status !== 'gift' && !isAdm()) return '';
+    return '<div class="sfp-gift"><b>' + t.giftT + '</b><div class="sfp-row" style="margin-top:6px"><input id="sfpgift" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="' + t.giftPh + '" value="' + esc(g(KG) || '') + '" style="flex:2;min-width:150px;text-transform:uppercase;letter-spacing:1px"><button class="btn primary mini" data-act="sfpGift">' + t.giftGo + '</button></div></div>';
+  }
+  async function redeem(b) {
+    var t = T(), c = ((document.getElementById('sfpgift') || {}).value || '').trim();
+    if (!c) return;
+    if (!sess()) return toast(t.giftR.auth);
+    b.disabled = true;
+    try {
+      var r = await rpc('sf_redeem', { p_code: c }); var k = (r && r.r) || 'bad';
+      if (k === 'ok') { s(KG, null); await refreshPlan(); toast(t.giftR.ok + (t.plans[r.plan] || r.plan) + (r.exp ? ' · ' + t.giftTill + new Date(r.exp).toLocaleDateString(lang()) : '')); render(); }
+      else toast(t.giftR[k] || t.giftR.bad);
+    } catch (e) { toast(e.message); } finally { b.disabled = false; }
+  }
+  /* link app.setfirst.app/app/?code=SF-XXXX-XXXX: tiene il codice e apre la pagina dei piani */
+  function giftFromUrl() {
+    try {
+      var u = new URL(location.href), c = u.searchParams.get('code'); if (!c) return;
+      s(KG, c.toUpperCase().slice(0, 20)); u.searchParams.delete('code'); history.replaceState(null, '', u.pathname + (u.search || '') + u.hash);
+      setTimeout(function () { var x = document.createElement('button'); x.dataset.act = 'proOpen'; x.style.display = 'none'; document.body.appendChild(x); x.click(); x.remove(); }, 900);
+    } catch (e) {}
+  }
+
+  /* ---- pannello di Simone: i suoi dispositivi non contano, contatori, codici ---- */
+  function isAdm() { var a = g(KA), x = sess(); return !!(a && a.ok && x && a.uid === x.id); }
+  async function checkAdm() {
+    var x = sess(); if (!x) { s(KA, null); return false; }
+    var a = g(KA);
+    if (!a || a.uid !== x.id || Date.now() - (a.at || 0) > 864e5) {
+      try { var r = await rpc('sf_is_admin'); s(KA, { uid: x.id, ok: r === true, at: Date.now() }); } catch (e) { return isAdm(); }
+    }
+    if (isAdm()) markMine();
+    return isAdm();
+  }
+  async function markMine() {
+    try {
+      s('setfirst.noStats', 1);
+      var aid = (g('setfirst.aid.v1') || {}).id; if (!aid || g('setfirst.mineOk') === aid) return;
+      var r = await rpc('hh_mark_mine', { p_aid: aid }); if (r === 'ok') s('setfirst.mineOk', aid);
+    } catch (e) {}
+  }
+  function admBox() {
+    if (!isAdm()) return '';
+    return '<div class="sfp-adm"><b>Pannello di Simone</b><p class="note" style="margin:2px 0 6px">Questo computer e questo account non contano nei numeri.</p><div class="sfp-row"><button class="btn mini" data-act="sfpStats">Contatori</button><button class="btn mini" data-act="sfpCodes">Codici regalo</button></div></div>';
+  }
+  function admCard() {
+    if (!isAdm()) return '';
+    return '<div class="panel sfg-card sfp-admcard"><div class="sfg-t"><b>Pannello di Simone</b><p class="note">Contatori e codici regalo · i tuoi dispositivi non contano</p></div><button class="btn mini" data-act="sfpStats">Contatori</button><button class="btn mini ghost" data-act="sfpCodes">Codici</button></div>';
+  }
+  function sheet(title, html) {
+    closeSheet();
+    var d = document.createElement('div'); d.className = 'sfg-bg sfp-bg'; d.id = 'sfpsheet';
+    d.innerHTML = '<div class="sfg-sheet sfp-sheet"><div class="sfp-head"><h2>' + title + '</h2><button class="btn ghost mini" data-act="sfpClose" aria-label="Chiudi">✕</button></div><div id="sfpbody">' + html + '</div></div>';
+    d.addEventListener('click', function (e) { if (e.target === d) closeSheet(); });
+    document.body.appendChild(d);
+  }
+  function closeSheet() { var d = document.getElementById('sfpsheet'); if (d) d.remove(); }
+  function body(h) { var b = document.getElementById('sfpbody'); if (b) b.innerHTML = h; }
+  function n(v) { return Number(v || 0).toLocaleString('it-IT'); }
+  function fd(d) { return d ? new Date(d.length === 10 ? d + 'T12:00:00' : d).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' }) : ''; }
+
+  var SRC = { diretto: 'diretto (link o digitato)' };
+  var CLK = { cta_top: 'Prova SetFirst (in alto)', cta_hero: 'Prova SetFirst (primo pulsante)', cta_end: 'Prova SetFirst (in fondo)', appstore_hero: 'App Store (in alto)', appstore_end: 'App Store (in fondo)' };
+  async function statsSheet(days) {
+    var seg = '<div class="sfp-seg">' + [[1, 'Oggi'], [7, '7 giorni'], [30, '30 giorni'], [90, '90 giorni']].map(function (x) { return '<button class="btn mini' + (x[0] === days ? ' primary' : ' ghost') + '" data-act="sfpStats" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div>';
+    if (document.getElementById('sfpbody') && document.querySelector('.sfp-sheet h2').textContent === 'Contatori') body(seg + '<p class="note">Carico…</p>'); else sheet('Contatori', seg + '<p class="note">Carico…</p>');
+    markMine();
+    var j = null; try { j = await rpc('sf_stats', { p_days: days }); } catch (e) {}
+    if (!document.getElementById('sfpbody')) return;
+    if (!j) return body(seg + '<div class="panel">Contatori non disponibili: controlla di essere entrato con il tuo account.</div>');
+    var k = function (l, v, sub) { return '<div class="sfp-kpi"><span>' + l + '</span><b>' + n(v) + '</b>' + (sub ? '<small>' + sub + '</small>' : '') + '</div>'; };
+    var row = function (l, v) { return '<div class="sfp-li"><span>' + l + '</span><b>' + n(v) + '</b></div>'; };
+    var list = function (t, a, f) { return a && a.length ? '<div class="sfp-box"><span class="sfp-lbl">' + t + '</span>' + a.map(f).join('') + '</div>' : ''; };
+    var pd = j.per_day || [], mx = Math.max(1, Math.max.apply(null, pd.map(function (x) { return Math.max(x.s, x.w, x.i); }).concat([1])));
+    var bars = pd.length > 1 ? '<div class="sfp-box"><span class="sfp-lbl">Giorno per giorno</span><div class="sfp-leg"><i class="c1"></i>sito <i class="c2"></i>app web <i class="c3"></i>iPhone</div><div class="sfp-bars">' + pd.slice(-31).map(function (x) {
+      var h = function (v, c) { return '<span class="' + c + '" title="' + v + '" style="height:' + Math.max(2, Math.round(v / mx * 70)) + 'px"></span>'; };
+      return '<div class="sfp-day" title="' + fd(x.g) + ': sito ' + x.s + ', web ' + x.w + ', iPhone ' + x.i + '"><div class="sfp-col">' + h(x.s, 'c1') + h(x.w, 'c2') + h(x.i, 'c3') + '</div><small>' + x.g.slice(8) + '</small></div>';
+    }).join('') + '</div></div>' : '';
+    var ends = function (a) { return (a || []).map(function (x) { return fd(x.e) + (x.plan ? ' · ' + x.plan : '') + (x.n > 1 ? ' (' + x.n + ')' : ''); }).join(', '); };
+    body(seg +
+      '<div class="sfp-kpis">' +
+      k('Visite al sito', j.site, 'persone diverse') +
+      k('App web aperta', j.web_open, n(j.web_new) + ' nuovi') +
+      k('App iPhone aperta', j.ios_open, n(j.ios_new) + ' nuove installazioni') +
+      k('Account creati', j.accounts, n(j.accounts_all) + ' in tutto') +
+      '</div>' +
+      '<div class="sfp-box"><span class="sfp-lbl">Abbonamenti dal sito (Paddle)</span>' +
+      row('Nuovi nel periodo', j.pd_new) + row('In prova gratuita adesso', j.pd_trial) +
+      (j.pd_trial_end && j.pd_trial_end.length ? '<p class="note" style="margin:2px 0 6px">Finiscono la prova: ' + ends(j.pd_trial_end) + '</p>' : '') +
+      row('Paganti attivi', j.pd_paid) + row('Prova finita senza pagare (sempre)', j.pd_lost) + row('Regali attivi (codici usati)', j.gift_on) + '</div>' +
+      '<div class="sfp-box"><span class="sfp-lbl">Prova gratuita sull’iPhone (14 giorni)</span>' +
+      row('Iniziate nel periodo', j.trials) + row('In corso adesso', j.trials_on) +
+      (j.trials_end && j.trials_end.length ? '<p class="note" style="margin:2px 0 0">Finiscono: ' + ends(j.trials_end) + '</p>' : '') + '</div>' +
+      '<div class="sfp-box"><span class="sfp-lbl">Passaggi verso l’acquisto</span>' +
+      row('Hanno visto i piani', j.paywall) + row('Hanno aperto il pagamento sul sito', j.checkout) + row('Hanno premuto «Abbonati» sull’iPhone', j.ios_buy) + row('Acquisti riusciti sull’iPhone', j.ios_ok) + row('Dal computer sono andati all’App Store', j.to_store) + row('Messaggi «Cosa ti manca?»', j.req) + '</div>' +
+      bars +
+      list('Da dove arrivano al sito', j.site_src, function (x) { return row(esc(SRC[x.src] || x.src), x.n); }) +
+      list('Cosa cliccano sul sito', j.site_clicks, function (x) { return row(esc(CLK[x.k] || x.k), x.n); }) +
+      list('Da dove arrivano all’app web (nuovi)', j.web_src, function (x) { return row(esc(SRC[x.src] || x.src), x.n); }) +
+      '<div class="sfp-box"><span class="sfp-lbl">Codici regalo</span>' + row('Liberi', j.codes_free) + row('Usati', j.codes_used) + '</div>' +
+      '<p class="note">Sono esclusi i tuoi dispositivi (' + n(j.mine) + ' segnati, anche di HullHub) e il tuo account. Gli abbonamenti fatti sull’iPhone li gestisce Apple: li vedi in App Store Connect › Tendenze.</p>');
+  }
+
+  var PN = { tutto: 'Tutto incluso', asport: 'Asportazione', laser: 'Laser e lamiera' }, CL = null;
+  function dur(d) { return d % 365 === 0 ? (d / 365) + (d === 365 ? ' anno' : ' anni') : d % 30 === 0 ? (d / 30) + (d === 30 ? ' mese' : ' mesi') : d + ' giorni'; }
+  function msg(codes, plan, days) {
+    var one = codes.length === 1;
+    return (one ? 'Ecco il tuo codice SetFirst' : 'Ecco i codici SetFirst') + ' (' + (PN[plan] || plan) + ', ' + dur(days) + ' gratis):\n\n' + codes.join('\n') +
+      '\n\nPer attivarl' + (one ? 'o' : 'i') + ' apri ' + (one ? 'questo link' : 'app.setfirst.app/app') + ' dal computer o dal telefono, crea l’account (email e password) e premi «Usa il codice»' + (one ? ':\nhttps://app.setfirst.app/app/?code=' + codes[0] : '.') +
+      '\n\nIl codice vale per la versione web di SetFirst (computer, tablet e telefono dal browser).';
+  }
+  async function codesSheet() {
+    if (!document.getElementById('sfpbody')) sheet('Codici regalo', '<p class="note">Carico…</p>');
+    var list = []; try { list = (await rpc('sf_codes_list')) || []; } catch (e) { return body('<div class="panel">Codici non disponibili: controlla di essere entrato con il tuo account.</div>'); }
+    var free = list.filter(function (x) { return !x.used_at; }).length, used = list.length - free;
+    var form = '<div class="sfp-box"><span class="sfp-lbl">Crea nuovi codici</span><div class="sfp-form">' +
+      '<label>Piano<select id="sfpcp"><option value="tutto">Tutto incluso</option><option value="asport">Asportazione</option><option value="laser">Laser e lamiera</option></select></label>' +
+      '<label>Durata<select id="sfpcd"><option value="30">1 mese</option><option value="60">2 mesi</option><option value="90">3 mesi</option><option value="180">6 mesi</option><option value="365" selected>1 anno</option></select></label>' +
+      '<label>Quanti<input id="sfpcn" type="number" min="1" max="50" value="1"></label>' +
+      '<label class="w">A chi / nota<input id="sfpct" maxlength="80" placeholder="es. Mario Rossi, fiera MECSPE"></label></div>' +
+      '<div class="sfp-row"><button class="btn primary" data-act="sfpMake">Crea codici</button></div></div>';
+    var last = CL ? '<div class="sfp-box sfp-new"><span class="sfp-lbl">Codici appena creati (' + CL.codes.length + ')</span><textarea id="sfpout" readonly rows="' + Math.min(14, CL.codes.length + 8) + '">' + esc(msg(CL.codes, CL.plan, CL.days)) + '</textarea><div class="sfp-row"><button class="btn primary mini" data-act="sfpCopy" data-v="msg">Copia messaggio</button><button class="btn ghost mini" data-act="sfpCopy" data-v="codes">Copia solo i codici</button></div></div>' : '';
+    var rows = list.length ? list.map(function (x) {
+      return '<div class="sfp-code"><span class="sfp-cm"><b>' + esc(x.code) + '</b><small>' + (PN[x.plan] || x.plan) + ' · ' + dur(x.days) + (x.note ? ' · ' + esc(x.note) : '') + '</small></span>' +
+        (x.used_at ? '<small class="sfp-cr">usato da ' + esc(x.email || '?') + '<br>il ' + new Date(x.used_at).toLocaleDateString('it-IT') + '</small>' :
+          '<small class="sfp-cr">libero<br>fino al ' + new Date(x.valid_until).toLocaleDateString('it-IT') + '</small><button class="btn ghost mini" data-act="sfpCopy" data-v="one" data-c="' + esc(x.code) + '" data-p="' + x.plan + '" data-d="' + x.days + '">Copia</button><button class="btn ghost mini" data-act="sfpDel" data-c="' + esc(x.code) + '">Annulla</button>') + '</div>';
+    }).join('') : '<p class="note">Nessun codice ancora.</p>';
+    body(last + form + '<div class="sfp-box"><span class="sfp-lbl">I tuoi codici · ' + free + ' liberi, ' + used + ' usati</span>' + rows + '</div>' +
+      '<p class="note">Ogni codice si usa una volta sola, dall’account web di chi lo riceve (app.setfirst.app). Vale un anno dalla creazione. Per l’iPhone restano i codici Apple.</p>');
+  }
+  async function codesMake(b) {
+    var plan = (document.getElementById('sfpcp') || {}).value || 'tutto', days = Number((document.getElementById('sfpcd') || {}).value || 365),
+      cnt = Math.max(1, Math.min(50, Number((document.getElementById('sfpcn') || {}).value || 1))), note = ((document.getElementById('sfpct') || {}).value || '').trim();
+    b.disabled = true;
+    try {
+      var r = await rpc('sf_codes_make', { p_plan: plan, p_days: days, p_count: cnt, p_note: note });
+      var codes = (Array.isArray(r) ? r : []).map(function (x) { return typeof x === 'string' ? x : (x && (x.sf_codes_make || Object.values(x)[0])); }).filter(Boolean);
+      if (!codes.length) { toast('Nessun codice creato: riprova'); return; }
+      CL = { codes: codes, plan: plan, days: days }; await codesSheet(); toast(codes.length === 1 ? 'Codice creato' : codes.length + ' codici creati');
+      var o = document.getElementById('sfpout'); if (o) o.scrollIntoView({ block: 'center' });
+    } catch (e) { toast(e.message); } finally { b.disabled = false; }
+  }
+  async function copy(t) {
+    try { await navigator.clipboard.writeText(t); toast('Copiato'); return; } catch (e) {}
+    var a = document.createElement('textarea'); a.value = t; a.style.cssText = 'position:fixed;top:0;left:0;opacity:0'; document.body.appendChild(a); a.select(); var ok = false; try { ok = document.execCommand('copy'); } catch (e) {} a.remove(); toast(ok ? 'Copiato' : 'Seleziona il testo e copialo a mano');
+  }
+  function codesCopy(b) {
+    var v = b.dataset.v;
+    if (v === 'one') return copy(msg([b.dataset.c], b.dataset.p, Number(b.dataset.d)));
+    if (!CL) return; copy(v === 'codes' ? CL.codes.join('\n') : msg(CL.codes, CL.plan, CL.days));
+  }
+  async function codesDel(b) {
+    b.disabled = true;
+    try { var r = await rpc('sf_codes_del', { p_code: b.dataset.c }); toast(r === 'ok' ? 'Codice annullato' : 'Già usato: non si può annullare'); CL = null; await codesSheet(); }
+    catch (e) { toast(e.message); } finally { b.disabled = false; }
+  }
+
   document.addEventListener('click', async function (e) {
     var b = e.target.closest('[data-act^="sfp"]'); if (!b) return;
     e.preventDefault(); e.stopPropagation();
@@ -2955,11 +3125,18 @@ ${P}
         var j = await auth('verify', { type: 'recovery', email: forgot, token: code }); keep(j);
         var r = await fetch(SB + '/auth/v1/user', { method: 'PUT', headers: { apikey: K, Authorization: 'Bearer ' + j.access_token, 'Content-Type': 'application/json' }, body: JSON.stringify({ password: np }) });
         if (!r.ok) throw new Error('pw ' + r.status);
-        forgot = null; toast(t.pwok); await refreshPlan(); render();
+        forgot = null; toast(t.pwok); await refreshPlan(); await checkAdm(); render();
       } catch (err) { toast(/token|otp|expired|invalid/i.test(err.message) ? t.errCode : err.message); } finally { b.disabled = false; }
       return;
     }
-    if (act === 'sfpOut') { var x = sess(); s(KS, null); s(KP, null); if (x) fetch(SB + '/auth/v1/logout', { method: 'POST', headers: { apikey: K, Authorization: 'Bearer ' + x.at } }).catch(function () {}); render(); return; }
+    if (act === 'sfpGift') return redeem(b);
+    if (act === 'sfpClose') return closeSheet();
+    if (act === 'sfpStats') return statsSheet(Number(b.dataset.v || 7));
+    if (act === 'sfpCodes') { CL = null; return codesSheet(); }
+    if (act === 'sfpMake') return codesMake(b);
+    if (act === 'sfpCopy') return codesCopy(b);
+    if (act === 'sfpDel') return codesDel(b);
+    if (act === 'sfpOut') { var x = sess(); s(KS, null); s(KP, null); s(KA, null); if (x) fetch(SB + '/auth/v1/logout', { method: 'POST', headers: { apikey: K, Authorization: 'Bearer ' + x.at } }).catch(function () {}); render(); return; }
     var em = ((document.getElementById('sfpmail') || {}).value || '').trim().toLowerCase(), pw = (document.getElementById('sfppw') || {}).value || '';
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) return toast(t.errMail);
     if (act === 'sfpForgot') { try { await auth('recover', { email: em }); forgot = em; toast(t.sent); render(); } catch (err) { toast(err.message); } return; }
@@ -2971,15 +3148,17 @@ ${P}
         var j = await auth('signup', { email: em, password: pw, data: { app: 'setfirst' } });
         if (!keep(j)) { try { keep(await auth('token?grant_type=password', { email: em, password: pw })); } catch (e2) { throw Object.assign(new Error(t.errExists), { code: 'exists' }); } }
       }
-      await refreshPlan(); render();
+      await refreshPlan(); await checkAdm(); render();
     } catch (err) {
       toast(/invalid|credentials/i.test(err.message) ? t.errLogin : /registered|exists/i.test(err.message) ? t.errExists : err.message);
     } finally { b.disabled = false; }
   }, true);
 
-  window.SFW = { ent: ent, plan: plan, refresh: refreshPlan, webPlans: webPlans, sess: sess, waiting: function () { return !!waiting; } };
+  window.SFW = { ent: ent, plan: plan, refresh: refreshPlan, webPlans: webPlans, sess: sess, waiting: function () { return !!waiting; }, admCard: admCard, isAdm: isAdm };
   css();
   refreshPlan().then(function (p) { if (p) render(); });
+  checkAdm().then(function (a) { if (a) render(); });
+  giftFromUrl();
   setInterval(function () { if (sess() && !document.hidden) refreshPlan().then(function () {}); }, 10 * 60 * 1000);
   document.addEventListener('visibilitychange', function () { if (!document.hidden && sess()) refreshPlan().then(render); });
 })();
