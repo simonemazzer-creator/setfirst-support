@@ -2617,7 +2617,7 @@ ${P}
   /* ---------- pezzi di interfaccia ---------- */
   function toast(t) { var x = X(); if (x) x.toast(t); }
   function rerender() { var x = X(); if (x) x.render(); }
-  var CSS = '.sfg-card{display:flex;gap:12px;align-items:center;margin:0 0 12px;border-left:4px solid var(--accent)}.sfg-card .sfg-t{flex:1;min-width:0}.sfg-card b{display:block;font-family:var(--display,inherit);font-size:17px;letter-spacing:.02em}.sfg-card .note{margin:2px 0 0}.sfg-card.end{border-left-color:var(--warn,#b7791f)}.sfg-card.hot{border-left-color:var(--warn,#b7791f);background:var(--accent-soft)}' +
+  var CSS = '.sfg-guide{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;margin:10px 0}.sfg-gi{flex:none;width:34px;height:34px;border-radius:10px;background:var(--brand,#D9621A);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}.sfg-ga{margin-left:auto;font-size:22px;opacity:.6}.sfg-card{display:flex;gap:12px;align-items:center;margin:0 0 12px;border-left:4px solid var(--accent)}.sfg-card .sfg-t{flex:1;min-width:0}.sfg-card b{display:block;font-family:var(--display,inherit);font-size:17px;letter-spacing:.02em}.sfg-card .note{margin:2px 0 0}.sfg-card.end{border-left-color:var(--warn,#b7791f)}.sfg-card.hot{border-left-color:var(--warn,#b7791f);background:var(--accent-soft)}' +
     '.sfg-miss textarea{width:100%;min-height:64px;margin:8px 0;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:8px 10px;font:inherit}.sfg-row{display:flex;gap:8px;flex-wrap:wrap}' +
     '.sfg-bg{position:fixed;inset:0;z-index:200;background:rgba(10,14,20,.55);display:grid;place-items:center;padding:16px;animation:sfgf .18s}@keyframes sfgf{from{opacity:0}}' +
     '.sfg-sheet{background:var(--panel,#fff);color:var(--ink);width:min(440px,100%);border-radius:18px;padding:20px;box-shadow:0 30px 80px -20px rgba(0,0,0,.6);display:flex;flex-direction:column;gap:10px;animation:sfgu .22s cubic-bezier(.2,.8,.3,1)}@keyframes sfgu{from{transform:translateY(18px);opacity:.3}}' +
@@ -2627,7 +2627,12 @@ ${P}
   function css() { if (document.getElementById('sfgcss')) return; var st = document.createElement('style'); st.id = 'sfgcss'; st.textContent = CSS; document.head.appendChild(st); }
 
   /* scheda in cima a Lavorazioni */
-  function hubCard() {
+  function guide() {
+    var en = (document.documentElement.lang || 'it').slice(0, 2) !== 'it';
+    return '<a class="panel sfg-guide" href="https://app.setfirst.app/guida.html' + (en ? '?lang=en' : '') + '" target="_blank" rel="noopener"><span class="sfg-gi">?</span><span><b>' + (en ? 'Guide: how to use and set up SetFirst' : 'Guida: come si usa e come si imposta') + '</b><br><span class="note">' + (en ? 'Shop and machines, programs, laser and nesting, quotes' : 'Officina e macchine, programmi, laser e incastro, preventivi') + '</span></span><span class="sfg-ga">›</span></a>';
+  }
+  function hubCard() { return hubCard_() + guide(); }
+  function hubCard_() {
     if (!gated() || hasSub()) return '';
     if (ended()) return '<div class="panel sfg-card end"><div class="sfg-t"><b>' + T.endT + '</b><p class="note">' + T.endS + '</p></div><button class="btn mini primary" data-act="proOpen">' + T.choose + '</button></div>' + missCard();
     var l = left(); if (l == null || l <= 0) return '';
