@@ -2768,7 +2768,8 @@ ${P}
     statsBox: function () { return (SFBridge.native || window.SF_WEB) ? '<label class="sfg-stat"><input type="checkbox" id="sfgstat"' + (g('setfirst.noStats') ? '' : ' checked') + '><span><b>' + T.statsT + '</b><br><span class="note">' + T.statsS + '</span></span></label>' : ''; },
     /* solo per prove: SFG.sim('start'|'mid'|'last'|'end'|null) */
     sim: function (v) { s('setfirst.sim', v ? { on: 1, v: v } : null); s('setfirst.trialSeen', null); rerender(); if (v === 'mid' || v === 'last') summary(v); },
-    T: T
+    T: T, evt: function (a, b, c) { evt(a, b, c); },
+    request: function (txt) { return post('/rest/v1/rpc/feature_request', { p_text: '[SetFirst] ' + txt, p_lang: EN ? 'en' : 'it', p_plan: plan(), p_ver: (window.SF_WEB ? 'sfweb' : 'sf') + (SFBridge.version || '') }).then(function () { evt('req_sent', 'guide'); }); }
   };
   css(); texts(); if (window.SF_WEB) document.documentElement.classList.add('sfweb');
   SFBridge.whenReady(function () {
@@ -2784,6 +2785,240 @@ ${P}
     }, 1200);
     document.addEventListener('visibilitychange', function () { if (!document.hidden) { rerender(); maybeSummary(); } });
   });
+})();
+
+</script>
+<script>
+/* SetFirst: menù iniziale su «Oggi», guida e assistenza dentro l'app, giro guidato (come HullHub).
+   Vale per iPhone e web. Lavora sopra la pagina già disegnata dall'app: riordina «Oggi» e usa i pulsanti originali (nascosti) per aprire le sezioni. */
+(function () {
+  function g(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
+  function s(k, v) { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function en() { return (document.documentElement.lang || 'it').slice(0, 2) !== 'it'; }
+  function evt(a, b, c) { try { if (window.SFG && SFG.evt) SFG.evt(a, b, c); } catch (e) {} }
+  function toast(t) { try { if (window.SFX && SFX.toast) return SFX.toast(t); } catch (e) {} }
+
+  var I = {
+    prog: '<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M10 13l-2 2 2 2M14 13l2 2-2 2"/>',
+    laser: '<path d="M12 2v7"/><path d="M9 9h6l-3 4z"/><path d="M3 20h18"/><path d="M6 17l3-3M18 17l-3-3"/><circle cx="12" cy="16" r="1.4"/>',
+    fresa: '<path d="M9 2h6v4H9z"/><path d="M10 6v9l2 3 2-3V6"/><path d="M10 9l4 2M10 12l4 2"/><path d="M5 21h14"/>',
+    tornio: '<circle cx="8" cy="12" r="5"/><circle cx="8" cy="12" r="1.5"/><path d="M13 10h7v4h-7"/><path d="M16 14v4"/>',
+    cost: '<path d="M6 2h12v20l-3-2-3 2-3-2-3 2z"/><path d="M9 7h6M9 11h6M9 15h4"/>',
+    alarm: '<path d="M12 3l10 17H2z"/><path d="M12 10v4"/><circle cx="12" cy="17" r=".8"/>',
+    off: '<path d="M3 21V9l9-6 9 6v12"/><path d="M8 21v-7h8v7"/>',
+    all: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+    help: '<circle cx="12" cy="12" r="9.5"/><path d="M9.5 9.2a2.6 2.6 0 015 .9c0 1.8-2.5 2.1-2.5 3.9"/><circle cx="12" cy="17.2" r=".8"/>'
+  };
+  function ic(k) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + I[k] + '</svg>'; }
+
+  var L = {
+    it: {
+      hi: 'Cosa vuoi fare?',
+      m: [['prog', 'Leggi un programma', 'Tempo, utensili, ogni riga spiegata e simulazione 3D'], ['laser', 'Laser e nesting', 'Tempo di taglio, gas, incastro sulla lamiera'], ['fresa', 'Fresa', 'Taglio, forature, programmi pronti'], ['tornio', 'Tornio', 'Barra, inserti, filetti, cicli pronti'], ['cost', 'Preventivi', 'Offerte in PDF, costo pezzo, archivio'], ['alarm', 'Allarmi e manuale', 'Cosa fare, codici G e M, regole'], ['off', 'La mia officina', 'Macchine, costi orari, utensili, lotti'], ['all', 'Tutti i calcoli', 'L’elenco completo dalla A alla Z']],
+      guide: 'Come si usa SetFirst', guideS: 'Giro guidato, istruzioni passo passo, domande e assistenza',
+      tourQ: 'Prima volta qui?', tourQS: 'Ti faccio vedere dove sono le cose in un minuto.', tourGo: 'Fai il giro', no: 'No, grazie',
+      next: 'Avanti', end: 'Fine', skip: 'Salta',
+      tour: ['Questo è il <b>menù</b>: da qui parti per tutto. Tocca una casella e vai dritto al lavoro.', 'Qui puoi <b>scrivere o chiedere</b> quello che ti serve: «M20×1», «G83», «allarme 332», «inox 3 mm»… Anche a voce con il microfono.', '<b>Leggi un programma</b>: apri il file .nc e vedi tempo, utensili, ogni riga spiegata e la simulazione 3D.', '<b>Laser e nesting</b>: tempi e costi di taglio con le tabelle della tua macchina, e l’incastro dei pezzi sulla lamiera.', '<b>Preventivi</b>: le righe arrivano dai calcoli e il PDF esce con il tuo logo.', 'Le <b>sezioni</b> dell’app: Oggi, Programma, Lavorazioni, Manuale e Officina.', 'La <b>macchina in uso</b>: tocca per cambiarla. Le tue macchine le aggiungi in Officina › Macchine.', '<b>Impostazioni</b>: lingua, caratteri grandi per bordo macchina, tema, copia di sicurezza.', 'Qui ritrovi sempre la <b>guida</b>, questo giro e l’assistenza. Buon lavoro!'],
+      gT: 'Come si usa SetFirst', gTour: 'Giro guidato (1 minuto)', gTourS: 'Ti mostro dove sono le cose, passo per passo',
+      gHow: 'Istruzioni passo passo', gFaq: 'Domande frequenti', gHelp: 'Assistenza', gMail: 'Scrivici: info@setfirst.app', gMailS: 'Rispondiamo noi, dall’officina',
+      gIdea: 'Cosa ti manca?', gIdeaS: 'Scrivi la funzione che vorresti: la leggiamo tutti.', gIdeaPh: 'Es. vorrei il calcolo della piega per l’alluminio…', gSend: 'Invia', gSent: 'Grazie! Lo leggiamo e ti rispondiamo se serve.', gShort: 'Scrivi qualche parola in più', gWeb: 'Guida completa con le immagini', close: 'Chiudi',
+      how: [
+        ['Prima di iniziare', ['Tocca una casella del <b>menù</b> in Oggi oppure usa le sezioni in basso (a sinistra sul computer).', 'In alto a destra c’è la <b>macchina in uso</b>: l’app legge e scrive i programmi nel suo linguaggio.', 'La <b>lente</b> cerca in tutta l’app; l’<b>ingranaggio</b> apre le impostazioni.']],
+        ['1 · Imposta la tua officina', ['<b>Officina › Macchine › + Aggiungi macchina</b>: tipo (fresa 3 o 5 assi, tornio, tornio con motorizzati), controllo, rapidi.', '<b>Rete</b>: per mandare i programmi in macchina scrivi la cartella di rete (es. smb://192.168.1.50).', '<b>Costi orari</b> di ogni reparto: li usano laser, preventivi e costo pezzo.', 'In <b>Utensili</b>, <b>Schede</b> e <b>Produzione</b> tieni utensili, attrezzaggi e lotti.']],
+        ['2 · Leggere un programma', ['<b>Leggi un programma</b> (o Programma › Apri file): carica .nc, .txt, .tap…', '<b>Riepilogo</b>: tempo, utensili, origine, giri massimi, Z minima.', '<b>Lettura</b>: ogni riga spiegata in italiano. <b>Percorso</b>: simulazione 3D con il pezzo che esce.', '<b>Avvisi</b>: le righe da controllare prima di partire. Poi <b>Modifica</b> o <b>Manda in macchina</b>.']],
+        ['3 · Calcoli di tornio e fresa', ['<b>Fresa</b>: taglio e potenza, forature, sferica, elicoidale, cerchi di fori, programmi pronti.', '<b>Tornio</b>: barra e sfrido, inserti, coni, filetti, gole, cicli pronti.', 'Tocca la <b>stella ☆</b> in un calcolo per averlo tra i preferiti in Oggi.']],
+        ['4 · Laser e nesting', ['<b>Pezzo singolo</b>: macchina laser, materiale, gas, spessore → tempo, gas e costo.', '<b>Aggiungi il tuo laser</b> con le tabelle della tua macchina: tempi e costi diventano i tuoi.', '<b>Nesting</b>: carica i DXF, scegli quantità e lamiera, premi <b>Calcola</b>. Il pulsante <b>1·2</b> mostra l’ordine di taglio.', 'Salva l’avanzo a magazzino, esporta DXF e PDF, o <b>+ Aggiungi al preventivo</b>.']],
+        ['5 · Preventivi', ['La prima volta: <b>La mia azienda</b> (nome, P.IVA, logo).', 'Cliente, oggetto, righe (anche dai calcoli), totali con IVA e margine.', '<b>PDF per il cliente</b>, analisi costi interna, Excel, revisioni e archivio.']],
+        ['6 · Manuale e allarmi', ['Regole d’officina, materiali, codici G e M, <b>allarmi delle macchine con cosa fare</b>, quiz per i ragazzi nuovi.']],
+        ['7 · Impostazioni e copia di sicurezza', ['Lingua, caratteri grandi, tema chiaro o scuro, mm o pollici.', '<b>Salva copia</b> mette macchine, utensili, schede e preferiti in un file; con <b>Ripristina</b> li porti su un altro telefono o computer.', 'Programmi e disegni restano sul tuo dispositivo.']],
+        ['8 · Sul telefono come un’app', ['<b>iPhone</b>: c’è l’app sull’App Store, oppure dal browser Condividi › «Aggiungi alla schermata Home».', '<b>Android</b>: in Chrome tocca ⋮ › «Aggiungi a schermata Home» (o «Installa app»).']],
+        ['9 · Prova e abbonamento', ['14 giorni con tutto sbloccato, senza account e senza carta.', 'Gratis per sempre: lettore e simulazione dei programmi, DXF, filetti, misura, manuale, officina.', 'Piani: Tutto incluso, Asportazione, Laser e lamiera. Dal computer con carta o PayPal, su iPhone con Apple.']]
+      ],
+      faq: [['I miei programmi finiscono su internet?', 'No. Programmi, disegni e preventivi restano sul tuo telefono o computer.'], ['Funziona con le mie macchine?', 'Legge il codice ISO (G e M) dei controlli più diffusi, con profili per Haas classico e NGC. Per il laser usi le tabelle della tua macchina.'], ['Posso usarla senza rete in officina?', 'Sì: calcoli, manuale e lettura dei programmi funzionano anche senza internet.'], ['Come passo i dati a un collega o su un altro telefono?', 'Impostazioni › Copia di sicurezza › Salva copia, poi Ripristina da file sull’altro dispositivo. Per una sola macchina usa Condividi in Officina.']]
+    },
+    en: {
+      hi: 'What do you want to do?',
+      m: [['prog', 'Read a program', 'Cycle time, tools, every line explained, 3D toolpath'], ['laser', 'Laser and nesting', 'Cutting time, gas, nesting on the sheet'], ['fresa', 'Milling', 'Cutting data, drilling, ready programs'], ['tornio', 'Turning', 'Bar, inserts, threads, ready cycles'], ['cost', 'Quotes', 'PDF quotes, part cost, archive'], ['alarm', 'Alarms and manual', 'What to do, G and M codes, rules'], ['off', 'My shop', 'Machines, hourly costs, tools, batches'], ['all', 'All calculations', 'The full list from A to Z']],
+      guide: 'How to use SetFirst', guideS: 'Guided tour, step-by-step help, questions and support',
+      tourQ: 'First time here?', tourQS: 'Let me show you where things are in one minute.', tourGo: 'Take the tour', no: 'No, thanks',
+      next: 'Next', end: 'Done', skip: 'Skip',
+      tour: ['This is the <b>menu</b>: start everything from here. Tap a tile and go straight to work.', 'Here you can <b>type or ask</b> what you need: “M20×1”, “G83”, “alarm 332”, “stainless 3 mm”… Or use the microphone.', '<b>Read a program</b>: open the .nc file and see cycle time, tools, every line explained and the 3D toolpath.', '<b>Laser and nesting</b>: cutting time and cost from your machine’s tables, and parts nested on the sheet.', '<b>Quotes</b>: lines come from the calculations and the PDF comes out with your logo.', 'The app’s <b>sections</b>: Today, Program, Machining, Manual and Shop.', 'The <b>machine in use</b>: tap to change it. Add your machines in Shop › Machines.', '<b>Settings</b>: language, large text at the machine, theme, backup.', 'Here you always find the <b>guide</b>, this tour and support. Enjoy!'],
+      gT: 'How to use SetFirst', gTour: 'Guided tour (1 minute)', gTourS: 'I’ll show you where things are, step by step',
+      gHow: 'Step-by-step help', gFaq: 'Frequently asked questions', gHelp: 'Support', gMail: 'Write to us: info@setfirst.app', gMailS: 'We answer ourselves, from the shop',
+      gIdea: 'What’s missing?', gIdeaS: 'Tell us the feature you would like.', gIdeaPh: 'E.g. I’d like bend calculation for aluminium…', gSend: 'Send', gSent: 'Thank you! We read every message.', gShort: 'Write a few more words', gWeb: 'Full guide with pictures', close: 'Close',
+      how: [
+        ['Before you start', ['Tap a tile of the <b>menu</b> in Today or use the sections at the bottom (on the left on a computer).', 'Top right is the <b>machine in use</b>: programs are read and written in its language.', 'The <b>magnifier</b> searches the whole app; the <b>gear</b> opens Settings.']],
+        ['1 · Set up your shop', ['<b>Shop › Machines › + Add machine</b>: type, control, rapids.', '<b>Network</b>: enter the machine’s network folder to send programs (e.g. smb://192.168.1.50).', '<b>Hourly costs</b> for each department: used by laser, quotes and part cost.']],
+        ['2 · Reading a program', ['<b>Read a program</b> (or Program › Open file).', '<b>Summary</b>, <b>Reading</b> (every line explained), <b>Toolpath</b> (3D), <b>Warnings</b>.', 'Then <b>Edit</b> or <b>Send to machine</b>.']],
+        ['3 · Turning and milling', ['Cutting data, drilling, threads, inserts, tapers, ready-made programs.', 'Tap the <b>☆</b> in a calculation to add it to Today.']],
+        ['4 · Laser and nesting', ['<b>Single part</b>: laser, material, gas, thickness → time, gas and cost.', '<b>Add your laser</b> tables for real times and costs.', '<b>Nesting</b>: load DXFs, quantities and sheet, press <b>Calculate</b>; <b>1·2</b> shows the cutting order.']],
+        ['5 · Quotes', ['First time: <b>My company</b> (name, VAT, logo).', 'Customer, lines (also from calculations), totals, <b>PDF for the customer</b>, revisions and archive.']],
+        ['6 · Manual and alarms', ['Shop rules, materials, G and M codes, <b>machine alarms and what to do</b>, a quiz for new staff.']],
+        ['7 · Settings and backup', ['Language, large text, theme, mm or inches.', '<b>Save backup</b> to a file and <b>Restore</b> it on another device. Programs and drawings stay on your device.']],
+        ['8 · On your phone like an app', ['<b>iPhone</b>: get the App Store app, or Share › “Add to Home Screen” from the browser.', '<b>Android</b>: in Chrome tap ⋮ › “Add to Home screen” (or “Install app”).']],
+        ['9 · Trial and subscription', ['14 days with everything unlocked, no account and no card.', 'Free forever: program reader and simulation, DXF, threads, measurement, manual, shop.']]
+      ],
+      faq: [['Do my programs go online?', 'No. Programs, drawings and quotes stay on your phone or computer.'], ['Does it work with my machines?', 'It reads ISO code (G and M) of the most common controls, with Haas classic and NGC profiles. For the laser you use your machine’s tables.'], ['Can I use it offline in the shop?', 'Yes: calculations, manual and program reading work without internet.'], ['How do I move my data to a colleague or another phone?', 'Settings › Backup › Save backup, then Restore from file on the other device.']]
+    }
+  };
+  function T() { return en() ? L.en : L.it; }
+
+  var CSS = '#sfmenu{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 6px}@media(min-width:760px){#sfmenu{grid-template-columns:repeat(4,1fr)}}' +
+    '.sfm-t{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:8px;text-align:left;padding:14px 14px 13px;border-radius:16px;border:1px solid var(--line);background:var(--panel,#fff);color:var(--ink);font:inherit;cursor:pointer;overflow:hidden;box-shadow:0 1px 0 rgba(0,0,0,.03),0 8px 22px -16px rgba(20,30,40,.35);transition:transform .18s cubic-bezier(.2,.8,.3,1),box-shadow .18s,border-color .18s;animation:sfmIn .5s cubic-bezier(.2,.8,.3,1) both}' +
+    '.sfm-t:hover{transform:translateY(-2px);border-color:var(--accent,#D9621A);box-shadow:0 14px 30px -18px rgba(217,98,26,.55)}.sfm-t:active{transform:scale(.97)}' +
+    '.sfm-t::after{content:"";position:absolute;right:-30px;top:-30px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,rgba(217,98,26,.14),transparent 70%);pointer-events:none}' +
+    '.sfm-i{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#E8782F,#C4511A);box-shadow:0 6px 14px -6px rgba(217,98,26,.7)}.sfm-i svg{width:22px;height:22px}' +
+    '.sfm-t b{font-family:var(--display,inherit);font-size:17px;letter-spacing:.01em;line-height:1.15}.sfm-t small{font-size:12.5px;line-height:1.3;opacity:.72}' +
+    '.sfm-t[data-sfm=prog] .sfm-i{background:linear-gradient(135deg,#3E8ED0,#2563A8);box-shadow:0 6px 14px -6px rgba(37,99,168,.7)}.sfm-t[data-sfm=cost] .sfm-i{background:linear-gradient(135deg,#4AA46F,#2F7D52);box-shadow:0 6px 14px -6px rgba(47,125,82,.7)}.sfm-t[data-sfm=alarm] .sfm-i{background:linear-gradient(135deg,#E0A93A,#B9801A)}.sfm-t[data-sfm=off] .sfm-i,.sfm-t[data-sfm=all] .sfm-i{background:linear-gradient(135deg,#55626D,#2E373F);box-shadow:0 6px 14px -6px rgba(30,40,50,.6)}' +
+    '@keyframes sfmIn{from{opacity:0;transform:translateY(12px) scale(.98)}}' +
+    '.sfm-g{display:flex;align-items:center;gap:12px;width:100%;margin:4px 0 14px;padding:13px 14px;border-radius:16px;border:1px dashed var(--accent,#D9621A);background:linear-gradient(90deg,rgba(217,98,26,.10),rgba(217,98,26,.02));color:var(--ink);font:inherit;text-align:left;cursor:pointer;animation:sfmIn .5s .35s both}.sfm-g .sfm-i{flex:none}.sfm-g b{display:block;font-size:16px}.sfm-g small{opacity:.75}.sfm-g .chev{margin-left:auto;font-size:22px;opacity:.6}' +
+    '.sfm-q{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0 0;padding:12px 14px;border-radius:14px;background:var(--ink,#1B2126);color:#fff;animation:sfmIn .5s both}.sfm-q b{display:block}.sfm-q span{flex:1;min-width:180px;font-size:14px}.sfm-q .btn{flex:none}' +
+    '#sfhelp{display:grid;place-items:center}#sfhelp svg{width:22px;height:22px}@media(min-width:481px){#sfhelp{margin-left:auto}#sfhelp+.topbig{margin-left:0!important}}@media(max-width:480px){#sfhelp{display:none!important}}' +
+    '.sfm-sheet{width:min(560px,100%)!important;max-height:90vh;overflow:auto}.sfm-sheet details{border:1px solid var(--line);border-radius:12px;margin:6px 0;background:var(--bg)}.sfm-sheet summary{cursor:pointer;padding:11px 12px;font-weight:600;list-style:none}.sfm-sheet summary::-webkit-details-marker{display:none}.sfm-sheet summary::after{content:"›";float:right;transition:transform .2s;opacity:.6}.sfm-sheet details[open] summary::after{transform:rotate(90deg)}.sfm-sheet details ul{margin:0;padding:0 14px 10px 30px}.sfm-sheet details li{margin:5px 0;line-height:1.4}.sfm-sheet details p{margin:0;padding:0 12px 12px}' +
+    '.sfm-lbl{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em;opacity:.7;margin:14px 0 4px;font-weight:600}.sfm-row{display:flex;gap:8px;flex-wrap:wrap}.sfm-sheet textarea{width:100%;min-height:70px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:8px 10px;font:inherit;margin:6px 0}' +
+    '.sfm-tour-btn{display:flex;align-items:center;gap:12px;width:100%;padding:12px;border-radius:14px;border:0;background:linear-gradient(90deg,#E8782F,#C4511A);color:#fff;font:inherit;text-align:left;cursor:pointer}.sfm-tour-btn b{display:block;font-size:16px}.sfm-tour-btn .sfm-i{background:rgba(255,255,255,.18);box-shadow:none}' +
+    '.sfm-a{display:flex;align-items:center;gap:10px;padding:11px 12px;border:1px solid var(--line);border-radius:12px;text-decoration:none;color:inherit;margin:6px 0}.sfm-a b{display:block}' +
+    '#sftr{position:fixed;inset:0;z-index:300;pointer-events:none}#sftrh{position:fixed;border-radius:16px;box-shadow:0 0 0 9999px rgba(10,14,20,.62);transition:all .3s ease;pointer-events:none;outline:2px solid rgba(232,120,47,.9);outline-offset:2px}' +
+    '#sftrt{position:fixed;left:16px;right:16px;max-width:440px;margin:0 auto;background:var(--panel,#fff);color:var(--ink);border-radius:16px;padding:16px;box-shadow:0 18px 50px rgba(0,0,0,.4);pointer-events:auto;transition:top .3s ease;animation:sfmIn .3s both}#sftrt p{margin:0 0 12px;font-size:15px;line-height:1.45}#sftrt .f{display:flex;align-items:center;gap:8px}#sftrt .d{flex:1;display:flex;gap:5px}#sftrt .d i{width:7px;height:7px;border-radius:4px;background:var(--line,#ccd)}#sftrt .d i.on{background:var(--accent,#D9621A);width:18px}';
+  function css() { if (document.getElementById('sfmcss')) return; var st = document.createElement('style'); st.id = 'sfmcss'; st.textContent = CSS; document.head.appendChild(st); }
+
+  /* ---- menù su «Oggi» ---- */
+  function menuHtml() {
+    var t = T();
+    return '<div id="sfmenu">' + t.m.map(function (x, i) { return '<button class="sfm-t" data-sfm="' + x[0] + '" style="animation-delay:' + (i * 45) + 'ms"><span class="sfm-i">' + ic(x[0] === 'fresa' ? 'fresa' : x[0]) + '</span><b>' + x[1] + '</b><small>' + x[2] + '</small></button>'; }).join('') + '</div>' +
+      '<button class="sfm-g" data-sfm="guide"><span class="sfm-i">' + ic('help') + '</span><span><b>' + t.guide + '</b><small>' + t.guideS + '</small></span><span class="chev">›</span></button>';
+  }
+  function tourAsk() {
+    var t = T(), st = g('setfirst.tour.v1');
+    if (st) return '';
+    return '<div class="sfm-q" id="sfmq"><span><b>' + t.tourQ + '</b>' + t.tourQS + '</span><button class="btn primary mini" data-sfm="tour">' + t.tourGo + '</button><button class="btn mini ghost" data-sfm="tourNo" style="color:#fff;border-color:rgba(255,255,255,.35)">' + t.no + '</button></div>';
+  }
+  var busy = false;
+  function fix() {
+    if (busy) return; busy = true;
+    try {
+      css(); helpBtn();
+      var m = document.getElementById('main'); if (!m) return;
+      var ask = m.querySelector('.askbar'), search = m.querySelector('#todaySearch');
+      if (!ask || !search) return;                          /* non è «Oggi» */
+      if (m.querySelector('#sfmenu')) return;
+      var quick = m.querySelector('.quick'), chips = m.querySelector('.chips'), hubs = m.querySelector('.hubs');
+      if (quick) quick.style.display = 'none';
+      if (chips) chips.style.display = 'none';
+      var title = m.querySelector('.screen-title'); if (title) title.textContent = T().hi;
+      ask.insertAdjacentHTML('afterend', tourAsk() + menuHtml());
+      if (hubs) {
+        hubs.style.display = 'none';
+        /* il titoletto «Lavorazioni» prima della lista e la nota dei preferiti dopo: via */
+        var pv = hubs.previousElementSibling; while (pv && !pv.classList.contains('eyebrow')) pv = pv.previousElementSibling;
+        if (pv && !pv.nextElementSibling.classList.contains('todos')) pv.style.display = 'none';
+        var nx = hubs.nextElementSibling; if (nx && nx.classList.contains('note')) nx.style.display = 'none';
+        var gd = m.querySelector('.sfg-guide'); if (gd) gd.style.display = 'none';
+        var after = document.querySelector('#main .sfm-g');
+        Array.prototype.slice.call(m.querySelectorAll('.sfg-card,.sfp-admcard,.sfp-home,#sfgmiss')).reverse().forEach(function (c) { if (c.parentNode === m) after.insertAdjacentElement('afterend', c); });
+      }
+    } catch (e) {} finally { busy = false; }
+  }
+  function helpBtn() {
+    if (document.getElementById('sfhelp')) return;
+    var top = document.querySelector('header.top'), set = document.getElementById('topSet'); if (!top || !set) return;
+    var b = document.createElement('button'); b.id = 'sfhelp'; b.className = set.className.replace(/\btopset\b/, '').trim() || 'topbig'; b.setAttribute('aria-label', T().gT); b.dataset.sfm = 'guide'; b.innerHTML = ic('help');
+    set.parentNode.insertBefore(b, set);
+  }
+  function clickHidden(sel) { var el = document.querySelector(sel); if (el) { el.click(); return true; } return false; }
+  function goTab(t) { return clickHidden('#tabs [data-tab="' + t + '"]') || clickHidden('[data-tab="' + t + '"]'); }
+  function open(k) {
+    evt('menu', k);
+    if (k === 'prog') { var f = document.getElementById('fileIn'); if (f) f.click(); else goTab('prog'); return; }
+    if (k === 'laser') return clickHidden('#main [data-act="goLaser"]');
+    if (k === 'alarm') return clickHidden('#main [data-act="goAlarm"]');
+    if (k === 'off') return goTab('off');
+    if (k === 'fresa' || k === 'tornio' || k === 'cost' || k === 'all') return clickHidden('#main [data-hub="' + k + '"]');
+  }
+
+  /* ---- guida e assistenza ---- */
+  function sheetClose() { var b = document.getElementById('sfmsheet'); if (b) b.remove(); }
+  function guide() {
+    sheetClose(); evt('guide_open', null);
+    var t = T(), web = 'https://app.setfirst.app/guida.html' + (en() ? '?lang=en' : '');
+    var h = '<div class="sfg-bg" id="sfmsheet"><div class="sfg-sheet sfm-sheet"><div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><h2>' + t.gT + '</h2><button class="btn ghost mini" data-sfm="close" aria-label="' + t.close + '">✕</button></div>' +
+      '<button class="sfm-tour-btn" data-sfm="tour"><span class="sfm-i">' + ic('help') + '</span><span><b>' + t.gTour + '</b><small>' + t.gTourS + '</small></span></button>' +
+      '<span class="sfm-lbl">' + t.gHow + '</span>' + t.how.map(function (x) { return '<details><summary>' + x[0] + '</summary><ul>' + x[1].map(function (l) { return '<li>' + l + '</li>'; }).join('') + '</ul></details>'; }).join('') +
+      '<a class="sfm-a" href="' + web + '" target="_blank" rel="noopener"><span><b>' + t.gWeb + '</b><small class="note">app.setfirst.app/guida</small></span><span style="margin-left:auto;opacity:.6">↗</span></a>' +
+      '<span class="sfm-lbl">' + t.gFaq + '</span>' + t.faq.map(function (x) { return '<details><summary>' + x[0] + '</summary><p>' + x[1] + '</p></details>'; }).join('') +
+      '<span class="sfm-lbl">' + t.gHelp + '</span><a class="sfm-a" href="mailto:info@setfirst.app"><span><b>' + t.gMail + '</b><small class="note">' + t.gMailS + '</small></span></a>' +
+      '<div class="sfm-a" style="display:block"><b>' + t.gIdea + '</b><small class="note">' + t.gIdeaS + '</small><textarea id="sfmidea" maxlength="2000" placeholder="' + t.gIdeaPh + '"></textarea><div class="sfm-row"><button class="btn primary mini" data-sfm="idea">' + t.gSend + '</button></div></div>' +
+      '</div></div>';
+    document.body.insertAdjacentHTML('beforeend', h);
+    var bg = document.getElementById('sfmsheet'); bg.addEventListener('click', function (e) { if (e.target === bg) sheetClose(); });
+  }
+  function idea(b) {
+    var t = T(), txt = ((document.getElementById('sfmidea') || {}).value || '').trim();
+    if (txt.length < 8) return toast(t.gShort);
+    b.disabled = true;
+    var send = window.SFG && SFG.request ? SFG.request(txt) : Promise.reject();
+    send.then(function () { toast(t.gSent); var a = document.getElementById('sfmidea'); if (a) a.value = ''; })
+      .catch(function () { location.href = 'mailto:info@setfirst.app?subject=' + encodeURIComponent('SetFirst: idea') + '&body=' + encodeURIComponent(txt); })
+      .then(function () { b.disabled = false; });
+  }
+
+  /* ---- giro guidato ---- */
+  var TI = -1;
+  var STEPS = [
+    { tab: 'oggi', sel: '#sfmenu' }, { tab: 'oggi', sel: '#main .askbar' }, { tab: 'oggi', sel: '#sfmenu [data-sfm="prog"]' }, { tab: 'oggi', sel: '#sfmenu [data-sfm="laser"]' },
+    { tab: 'oggi', sel: '#sfmenu [data-sfm="cost"]' }, { tab: 'oggi', sel: 'nav.tabs' }, { tab: null, sel: '#mchip' }, { tab: null, sel: '#topSet' }, { tab: 'oggi', sel: '#sfhelp', alt: '#main .sfm-g' }
+  ];
+  function tourStart() { sheetClose(); s('setfirst.tour.v1', { at: Date.now() }); var q = document.getElementById('sfmq'); if (q) q.remove(); evt('tour_start', null, true); TI = -1; goTab('oggi'); setTimeout(function () { tourGo(1); }, 350); }
+  function tourEnd(done) { if (done) evt('tour_end', null, true); TI = -1; var b = document.getElementById('sftr'); if (b) b.remove(); }
+  function tourGo(d) {
+    var i = TI + d; if (i < 0 || i >= STEPS.length) return tourEnd(i >= STEPS.length); TI = i;
+    var st = STEPS[i]; if (st.tab && !document.querySelector('#main #sfmenu')) goTab(st.tab);
+    setTimeout(function () {
+      var el = document.querySelector(st.sel); if (el && (el.offsetParent === null && getComputedStyle(el).position !== 'fixed')) el = null;
+      if (!el && st.alt) { el = document.querySelector(st.alt); if (el && el.offsetParent === null) el = null; }
+      if (el && el.scrollIntoView) el.scrollIntoView({ block: 'center' });
+      setTimeout(function () { tourDraw(el, i); }, el ? 280 : 0);
+    }, 150);
+  }
+  function tourDraw(el, i) {
+    var t = T(), n = STEPS.length, b = document.getElementById('sftr');
+    if (!b) { b = document.createElement('div'); b.id = 'sftr'; b.innerHTML = '<div id="sftrh"></div><div id="sftrt"></div>'; document.body.appendChild(b); }
+    var h = document.getElementById('sftrh'), tip = document.getElementById('sftrt'), vh = innerHeight;
+    if (el) { var r = el.getBoundingClientRect(), p = 6; h.style.left = (r.left - p) + 'px'; h.style.top = (r.top - p) + 'px'; h.style.width = (r.width + 2 * p) + 'px'; h.style.height = (Math.min(r.height, vh - 40) + 2 * p) + 'px'; }
+    else { h.style.left = '50%'; h.style.top = '40%'; h.style.width = '0px'; h.style.height = '0px'; }
+    var last = i === n - 1;
+    tip.innerHTML = '<p>' + t.tour[i] + '</p><div class="f"><div class="d">' + STEPS.map(function (_, k) { return '<i class="' + (k === i ? 'on' : '') + '"></i>'; }).join('') + '</div>' + (last ? '' : '<button class="btn ghost mini" data-sftr="skip">' + t.skip + '</button>') + '<button class="btn primary mini" data-sftr="' + (last ? 'end' : 'next') + '">' + (last ? t.end : t.next) + '</button></div>';
+    var th = tip.offsetHeight || 150, top;
+    if (el) { var rr = el.getBoundingClientRect(); top = rr.bottom + 14 + th < vh - 10 ? rr.bottom + 14 : Math.max(12, rr.top - th - 14); if (top + th > vh - 10) top = vh - th - 12; }
+    else top = vh * 0.35;
+    tip.style.top = top + 'px';
+  }
+
+  document.addEventListener('click', function (e) {
+    var tr = e.target.closest && e.target.closest('[data-sftr]');
+    if (tr) { e.preventDefault(); e.stopImmediatePropagation(); var a = tr.dataset.sftr; if (a === 'next') tourGo(1); else tourEnd(a === 'end'); return; }
+    var b = e.target.closest && e.target.closest('[data-sfm]'); if (!b) return;
+    var k = b.dataset.sfm; e.preventDefault(); e.stopImmediatePropagation();
+    if (k === 'guide') return guide();
+    if (k === 'close') return sheetClose();
+    if (k === 'tour') return tourStart();
+    if (k === 'tourNo') { s('setfirst.tour.v1', { no: 1, at: Date.now() }); var q = document.getElementById('sfmq'); if (q) q.remove(); return; }
+    if (k === 'idea') return idea(b);
+    open(k);
+  }, true);
+  /* la scheda «Guida» in Lavorazioni apre la guida dentro l'app */
+  document.addEventListener('click', function (e) { var a = e.target.closest && e.target.closest('a.sfg-guide'); if (!a) return; e.preventDefault(); e.stopImmediatePropagation(); guide(); }, true);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { sheetClose(); if (TI >= 0) tourEnd(false); } });
+  addEventListener('resize', function () { if (TI >= 0) tourGo(0); });
+
+  function boot() {
+    var m = document.getElementById('main');
+    if (!m) return setTimeout(boot, 300);
+    new MutationObserver(function () { if (!busy) fix(); }).observe(m, { childList: true });
+    fix(); setInterval(function () { if (!document.querySelector('#main #sfmenu') && document.querySelector('#main #todaySearch')) fix(); else helpBtn(); }, 800);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  window.SFM = { guide: guide, tour: tourStart, fix: fix };
 })();
 
 </script>
