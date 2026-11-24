@@ -2536,7 +2536,7 @@ ${P}
 
   /* ---------- l'app applica i blocchi? (solo iPhone/iPad con gli abbonamenti dell'App Store) ---------- */
   function gated() { var x = X(); return !!(x && x.gated()); }
-  function hasSub() { var x = X(); return !!(x && x.subscribed()); }
+  function hasSub() { var x = X(); return !!(x && x.subscribed()) || !!(window.SFW && SFW.plan()); }
   function hadSub() { var x = X(); return !!(x && x.hadSub()); }
 
   /* ---------- prova gratuita ---------- */
