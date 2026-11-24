@@ -2201,7 +2201,7 @@ M59 P1134`)}${xt(SF_L[4264],"M59 P1134")}${SF_L[4260]}`)+be(`${SF_L[4265]}${f1.m
       <div class="segwrap">${mm.map(([o,i])=>`<button class="chip ${a===o?"on":""}" data-proca="${o}">${i}</button>`).join("")}</div>
       <div class="tools">${Ko.filter(o=>o.a===a).map(o=>`<button class="toolc" data-procopen="${o.id}"><b>${y(o.t)}</b><small>${y(o.d)}</small></button>`).join("")}</div>
       ${te(SF_L[5587])}`}function H1(){const e=Kn(),a=e.list.find(l=>l.id===d.procRun),t=a&&Ko.find(l=>l.id===a.proc);if(!t)return;const o=["SETFIRST · "+t.t,SF_L[5588]+(a.job||"-"),SF_L[5589]+new Date(a.start).toLocaleString(SF_LOCALE),a.note?SF_L[5590]+a.note:"",SF_L[5591]+t.n.join("; "),""];t.f.forEach((l,c)=>{o.push(c+1+". "+l[0].toUpperCase()),l[1].forEach((s,p)=>{const u=a.done[c+"_"+p];o.push("  ["+(u?"X":" ")+"] "+s+(u?"  ("+new Date(u).toLocaleString(SF_LOCALE)+")":""))}),o.push("")});const i=o.filter((l,c)=>l!==""||c>4).join(`
-`),n="Checklist_"+t.id+"_"+String(a.job||"commessa").replace(/[^\w-]+/g,"_")+".txt";wt(n,"text/plain",i,SF_L[5592])}function B1(e){const a=Kn();if(e.proca)return d.procA=e.proca,C(),!0;if(e.procopen)return d.procOpen=e.procopen,d.procRun=null,d.procDelAsk=!1,C(),we(),!0;if(e.procrun){const t=a.list.find(o=>o.id===e.procrun);return t&&(d.procOpen=t.proc,d.procRun=t.id,d.procDelAsk=!1,C(),we()),!0}if(e.pchk){const t=a.list.find(o=>o.id===d.procRun);return t&&(t.done[e.pchk]?delete t.done[e.pchk]:t.done[e.pchk]=Date.now(),bs(a),C()),!0}switch(e.act){case"procBack":return d.procOpen=null,d.procRun=null,C(),!0;case"procStart":{const t=(document.getElementById("procJob")||{}).value||"",o={id:"p"+Date.now().toString(36),proc:d.procOpen,job:t.trim(),start:Date.now(),done:{},note:""};return a.list.push(o),a.list.length>200&&a.list.splice(0,a.list.length-200),bs(a),d.procRun=o.id,d.procJob="",C(),Q(SF_L[5593]),!0}case"procClose":return d.procRun=null,C(),!0;case"procDelRun":return d.procDelAsk?(a.list=a.list.filter(t=>t.id!==d.procRun),bs(a),d.procRun=null,d.procDelAsk=!1,C(),Q(SF_L[5594]),!0):(d.procDelAsk=!0,C(),!0);case"procExport":return H1(),!0}return!1}const kt=()=>!!(w&&w.nav!=="old"),tn=[{id:"tornio",t:SF_L[6],d:SF_L[5595],calc:["barra","taglio","rins","rug","cono","fil","gole","sondet"],gen:["g_turn","g_groove","g_part"],rules:["pezzo","utensile","filetto","taglio","inserti"],proc:[]},{id:"fresa",t:SF_L[426],d:SF_L[5596],calc:["taglio","forat","sfera","elic","fori","rug","sonde"],gen:["g_face","g_pock","g_circ","g_cont","g_grid"],rules:["fresa","foro","maschi","taglio","inserti"],proc:[]},{id:"laser",t:SF_L[5597],d:SF_L[5598],calc:["laser","lamott","lam"],gen:[],rules:["laser"],proc:[]},{id:"sald",t:SF_L[5599],d:SF_L[5600],calc:["sald","serr","resi"],gen:[],rules:[],proc:["en1090","tiginox","qualsald","passiv","lucid","vernice","zinc"]},{id:"acc",t:SF_L[5601],d:SF_L[5602],calc:["fil","tol","cal","ling","gole","serr","calib"],gen:[],rules:["maschi","filetto","tolleranze"],proc:[]},{id:"qual",t:SF_L[4972],d:SF_L[5603],calc:["misu","trig","calib","dil","rug","dur","conv"],gen:[],rules:["misura","tolleranze"],proc:["ciclo9001","fai","taratura","nc","tempra"]},{id:"prog",t:SF_L[5604],d:SF_L[5605],calc:["ingr","resi","peso","dur","conv"],gen:[],rules:["sicurezza"],proc:["registro","macchine","sic81"],mats:!0},{id:"cost",t:SF_L[4363],d:SF_L[5606],calc:["prev","costo","mano","tariffa"],gen:[],rules:[],proc:[]}],fm={cost:'<svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/><path d="M14.5 11.5a3 3 0 1 0 0 4"/><path d="M9.5 13h4M9.5 14.6h4"/></svg>',tornio:'<svg viewBox="0 0 24 24"><rect x="3" y="8" width="5" height="8" rx="1"/><path d="M8 10h9l3 2-3 2H8"/><path d="M11 10v4M14 10v4"/></svg>',fresa:'<svg viewBox="0 0 24 24"><path d="M10 3h4v6h-4z"/><path d="M9 9h6l-1 8h-4z"/><path d="M4 21h16"/></svg>',laser:'<svg viewBox="0 0 24 24"><path d="M12 3v7"/><path d="M9 10h6l-3 5z"/><path d="M3 19h18M7 19l2-3M17 19l-2-3"/></svg>',sald:'<svg viewBox="0 0 24 24"><path d="M4 20l7-7"/><path d="M11 13l3-6 3 3-6 3z"/><path d="M16 15l1.5 1.5M18 13l2 .5M15 18l.5 2"/></svg>',acc:'<svg viewBox="0 0 24 24"><path d="M8 3v18M16 3v18"/><path d="M8 6l8 2M8 10l8 2M8 14l8 2M8 18l8 2"/></svg>',qual:'<svg viewBox="0 0 24 24"><path d="M3 17l6-12 2 4h10"/><path d="M5 21h14"/><circle cx="17" cy="15" r="3"/></svg>',prog:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>'},X1=e=>(Po.find(a=>a[0]===e)||[e,e])[1],vs=e=>{const a=Po.find(o=>o[0]===e);if(!a)return"";const t=(w.fav||[]).includes(e);return`<button class="toolc" data-calc="${e}"><b>${t?"★ ":""}${a[1]}${wm(e)}</b><small>${a[2]}</small></button>`},gm="setfirst.pro.v1",ic=[{id:"tutto",t:SF_L[5607],d:SF_L[5608],best:!0,inc:[SF_L[5609],SF_L[5610],SF_L[5611],SF_L[5612],SF_L[5613]]},{id:"asport",t:SF_L[5614],d:SF_L[5615],inc:[SF_L[5616],SF_L[5610],SF_L[5613]]},{id:"laser",t:SF_L[5597],d:SF_L[5617],inc:[SF_L[5618],SF_L[5619],SF_L[5612],SF_L[5613]]}],Z1=ic.flatMap(e=>["setfirst."+e.id+".mese","setfirst."+e.id+".anno"]),j1={tutto:[9.99,59.99],asport:[6.99,39.99],laser:[6.99,39.99]},W1="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/",zs="https://simonemazzer-creator.github.io/setfirst-support/",U1='<svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1.4"/></svg>',Pa={ready:!1,prods:{},act:[],exp:null,had:!1,busy:"",err:"",noStore:!1,inited:!1},bm=()=>SFBridge.native?SFBridge.plug("NativePurchases"):null;function on(){if(!SFBridge.native)return!1;const e=window.Capacitor;try{if(e&&typeof e.isPluginAvailable=="function"&&!e.isPluginAvailable("NativePurchases"))return!0}catch{}return!bm()}function Y1(){const e=window.Capacitor;try{if(e&&typeof e.getPlatform=="function"){const a=e.getPlatform();if(a)return a==="ios"}}catch{}return/iPhone|iPad|iPod/.test(navigator.userAgent||"")||navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1}const Mi=()=>on()?null:bm(),nc=()=>SF_L[5620],ys=()=>on()?(Q(nc()),!0):!1;function vm(){try{const e=JSON.parse(SFStore.getItem(gm)||"null");return e&&typeof e=="object"?e:null}catch{return null}}function V1(){if(Pa.ready)return Pa.act;const e=vm();return e&&e.exp&&Date.parse(e.exp)+3*864e5>Date.now()?e.act||[]:[]}function _1(){if(!SFBridge.native&&!window.SF_WEB||Pa.noStore||on()&&!Y1())return{asport:!0,laser:!0};if(window.SFG&&SFG.on())return{asport:!0,laser:!0};const e=V1(),a=t=>e.some(o=>o.indexOf("setfirst."+t+".")===0);return{asport:a("asport")||a("tutto"),laser:a("laser")||a("tutto")}}function zm(e){const a=_1();return e==="any"?a.asport||a.laser:!!a[e]}function ym(e){const a=tn.filter(t=>t.calc.includes(e)||t.gen.includes(e)).map(t=>t.id);return a.length?a.some(t=>t==="acc"||t==="qual"||t==="prog")?null:a.includes("cost")?"any":a.includes("tornio")||a.includes("fresa")?"asport":"laser":/^g_/.test(e)?"asport":null}function Jn(e){const a=ym(e);return!!a&&!zm(a)}const wm=e=>Jn(e)?' <span class="pill pro">Pro</span>':"";function Q1(e){const a=tn.find(t=>t.id===e);return!!a&&a.calc.concat(a.gen).some(Jn)}async function Ci(){const e=Mi();if(e)try{const a=await e.getPurchases({productType:"subs"}),t=(a&&a.purchases||[]).filter(n=>/^setfirst\./.test(n.productIdentifier||"")),o=Date.now(),i=t.filter(n=>!n.revocationDate&&!n.isUpgraded&&(n.isActive===!0||n.isActive==null&&n.expirationDate&&Date.parse(n.expirationDate)>o));Pa.had=t.length>0,Pa.act=[...new Set(i.map(n=>n.productIdentifier))],Pa.exp=i.reduce((n,l)=>l.expirationDate&&(!n||Date.parse(l.expirationDate)>Date.parse(n))?l.expirationDate:n,null),Pa.ready=!0,SFStore.setItem(gm,JSON.stringify({act:Pa.act,exp:Pa.exp,had:Pa.had,at:new Date().toISOString()}))}catch(a){console.warn(SF_L[5621],a)}}async function rc(){const e=Mi();if(e)try{const a=await e.getProducts({productIdentifiers:Z1,productType:"subs"}),t=a&&a.products||[];t.forEach(o=>{Pa.prods[o.identifier]=o}),Pa.noStore=t.length===0,Pa.err=""}catch{Pa.err=SF_L[5622]}}function K1(){const e=Mi();if(!e||Pa.inited)return;Pa.inited=!0;const a=vm();a&&(Pa.had=!!a.had),Promise.all([rc(),Ci()]).then(()=>C());try{e.addListener("transactionUpdated",()=>{Ci().then(()=>C())})}catch{}document.addEventListener("visibilitychange",()=>{document.hidden||Ci().then(()=>C())})}function xm(e,a){try{return new Intl.NumberFormat(SF_LANG==="en"?"en-GB":"it-IT",{style:"currency",currency:a||"EUR"}).format(e)}catch{return(+e).toFixed(2)+" "+(a||"€")}}function J1(e,a,t){const o=/\d(?:[\d.,\u00a0\u202f ']*\d)?/.exec(String(e||""));if(!o||!isFinite(a))return xm(a,t);const i=o[0],n=/([.,])(\d{1,3})$/.exec(i),l=n&&n[2].length!==3?n[1]:"",c=l?n[2].length:0,s=(i.replace(l?/[.,]\d+$/:/$/,"").match(/[^\d]/)||[""])[0],p=a.toFixed(c).split("."),u=p[0].replace(/\B(?=(\d{3})+(?!\d))/g,s);return e.slice(0,o.index)+u+(c?l+p[1]:"")+e.slice(o.index+i.length)}function $m(e,a){const t=Pa.prods["setfirst."+e+"."+a];if(t)return{v:+t.price,s:t.priceString,cur:t.currencyCode,intro:!!t.introductoryPrice};const o=j1[e][a==="anno"?1:0];return{v:o,s:xm(o,"EUR"),cur:"EUR",intro:!0}}const ws=()=>!Pa.had&&(!SFBridge.native||Object.values(Pa.prods).some(e=>e&&e.introductoryPrice)),sc=e=>{const a=/^setfirst\.(\w+)\.(mese|anno)$/.exec(e||""),t=a&&ic.find(o=>o.id===a[1]);return t?t.t+" · "+(a[2]==="anno"?SF_L[5623]:SF_L[5624]):""};function eb(e){return(window.SFG?SFG.lockTop():"")+eb_(e)}function eb_(e){const a=ym(e),t=a==="any"?SF_L[5625]:a==="laser"?SF_L[5626]:SF_L[5627];return`<div class="panel prolock"><span class="prolock-i">${U1}${SF_L[5628]}${t}${ws()&&!on()?SF_L[5630]:""}</p>${on()?`<div class="warnbox">${y(nc())}</div>`:""}${SF_L[5629]}`}function ab(){if(window.SF_WEB&&window.SFG)return SFG.webPlans();return ab_()+(window.SFG?SFG.statsBox():"")}function ab_(){if(!SFBridge.native)return`${SF_L[5631]}${zs}${SF_L[5632]}${zs}" target="_blank" rel="noopener">Privacy</a></p>`;const e=d.proPer||"anno",a=!!SFBridge.native,t=Pa.act[0],o=!!Pa.busy,i=!a||Object.keys(Pa.prods).length>0,n=e==="anno"&&i&&!Pa.err&&Date.now()<Date.parse("2027-01-01T00:00:00"),l=s=>{const p="setfirst."+s.id+"."+e,u=$m(s.id,e),g=$m(s.id,"mese"),f=e==="anno"&&g.v?Math.floor((1-u.v/(g.v*12))*100):0,b=Pa.act.includes(p),h=!Pa.had&&u.intro,v=!a||!!Pa.prods[p];return`<div class="procard${s.best?" best":""}${b?" mine":""}">
+`),n="Checklist_"+t.id+"_"+String(a.job||"commessa").replace(/[^\w-]+/g,"_")+".txt";wt(n,"text/plain",i,SF_L[5592])}function B1(e){const a=Kn();if(e.proca)return d.procA=e.proca,C(),!0;if(e.procopen)return d.procOpen=e.procopen,d.procRun=null,d.procDelAsk=!1,C(),we(),!0;if(e.procrun){const t=a.list.find(o=>o.id===e.procrun);return t&&(d.procOpen=t.proc,d.procRun=t.id,d.procDelAsk=!1,C(),we()),!0}if(e.pchk){const t=a.list.find(o=>o.id===d.procRun);return t&&(t.done[e.pchk]?delete t.done[e.pchk]:t.done[e.pchk]=Date.now(),bs(a),C()),!0}switch(e.act){case"procBack":return d.procOpen=null,d.procRun=null,C(),!0;case"procStart":{const t=(document.getElementById("procJob")||{}).value||"",o={id:"p"+Date.now().toString(36),proc:d.procOpen,job:t.trim(),start:Date.now(),done:{},note:""};return a.list.push(o),a.list.length>200&&a.list.splice(0,a.list.length-200),bs(a),d.procRun=o.id,d.procJob="",C(),Q(SF_L[5593]),!0}case"procClose":return d.procRun=null,C(),!0;case"procDelRun":return d.procDelAsk?(a.list=a.list.filter(t=>t.id!==d.procRun),bs(a),d.procRun=null,d.procDelAsk=!1,C(),Q(SF_L[5594]),!0):(d.procDelAsk=!0,C(),!0);case"procExport":return H1(),!0}return!1}const kt=()=>!!(w&&w.nav!=="old"),tn=[{id:"tornio",t:SF_L[6],d:SF_L[5595],calc:["barra","taglio","rins","rug","cono","fil","gole","sondet"],gen:["g_turn","g_groove","g_part"],rules:["pezzo","utensile","filetto","taglio","inserti"],proc:[]},{id:"fresa",t:SF_L[426],d:SF_L[5596],calc:["taglio","forat","sfera","elic","fori","rug","sonde"],gen:["g_face","g_pock","g_circ","g_cont","g_grid"],rules:["fresa","foro","maschi","taglio","inserti"],proc:[]},{id:"laser",t:SF_L[5597],d:SF_L[5598],calc:["laser","lamott","lam"],gen:[],rules:["laser"],proc:[]},{id:"sald",t:SF_L[5599],d:SF_L[5600],calc:["sald","serr","resi"],gen:[],rules:[],proc:["en1090","tiginox","qualsald","passiv","lucid","vernice","zinc"]},{id:"acc",t:SF_L[5601],d:SF_L[5602],calc:["fil","tol","cal","ling","gole","serr","calib"],gen:[],rules:["maschi","filetto","tolleranze"],proc:[]},{id:"qual",t:SF_L[4972],d:SF_L[5603],calc:["misu","trig","calib","dil","rug","dur","conv"],gen:[],rules:["misura","tolleranze"],proc:["ciclo9001","fai","taratura","nc","tempra"]},{id:"prog",t:SF_L[5604],d:SF_L[5605],calc:["ingr","resi","peso","dur","conv"],gen:[],rules:["sicurezza"],proc:["registro","macchine","sic81"],mats:!0},{id:"cost",t:SF_L[4363],d:SF_L[5606],calc:["prev","costo","mano","tariffa"],gen:[],rules:[],proc:[]}],fm={cost:'<svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/><path d="M14.5 11.5a3 3 0 1 0 0 4"/><path d="M9.5 13h4M9.5 14.6h4"/></svg>',tornio:'<svg viewBox="0 0 24 24"><rect x="3" y="8" width="5" height="8" rx="1"/><path d="M8 10h9l3 2-3 2H8"/><path d="M11 10v4M14 10v4"/></svg>',fresa:'<svg viewBox="0 0 24 24"><path d="M10 3h4v6h-4z"/><path d="M9 9h6l-1 8h-4z"/><path d="M4 21h16"/></svg>',laser:'<svg viewBox="0 0 24 24"><path d="M12 3v7"/><path d="M9 10h6l-3 5z"/><path d="M3 19h18M7 19l2-3M17 19l-2-3"/></svg>',sald:'<svg viewBox="0 0 24 24"><path d="M4 20l7-7"/><path d="M11 13l3-6 3 3-6 3z"/><path d="M16 15l1.5 1.5M18 13l2 .5M15 18l.5 2"/></svg>',acc:'<svg viewBox="0 0 24 24"><path d="M8 3v18M16 3v18"/><path d="M8 6l8 2M8 10l8 2M8 14l8 2M8 18l8 2"/></svg>',qual:'<svg viewBox="0 0 24 24"><path d="M3 17l6-12 2 4h10"/><path d="M5 21h14"/><circle cx="17" cy="15" r="3"/></svg>',prog:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>'},X1=e=>(Po.find(a=>a[0]===e)||[e,e])[1],vs=e=>{const a=Po.find(o=>o[0]===e);if(!a)return"";const t=(w.fav||[]).includes(e);return`<button class="toolc" data-calc="${e}"><b>${t?"★ ":""}${a[1]}${wm(e)}</b><small>${a[2]}</small></button>`},gm="setfirst.pro.v1",ic=[{id:"tutto",t:SF_L[5607],d:SF_L[5608],best:!0,inc:[SF_L[5609],SF_L[5610],SF_L[5611],SF_L[5612],SF_L[5613]]},{id:"asport",t:SF_L[5614],d:SF_L[5615],inc:[SF_L[5616],SF_L[5610],SF_L[5613]]},{id:"laser",t:SF_L[5597],d:SF_L[5617],inc:[SF_L[5618],SF_L[5619],SF_L[5612],SF_L[5613]]}],Z1=ic.flatMap(e=>["setfirst."+e.id+".mese","setfirst."+e.id+".anno"]),j1={tutto:[9.99,59.99],asport:[6.99,39.99],laser:[6.99,39.99]},W1="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/",zs="https://simonemazzer-creator.github.io/setfirst-support/",U1='<svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1.4"/></svg>',Pa={ready:!1,prods:{},act:[],exp:null,had:!1,busy:"",err:"",noStore:!1,inited:!1},bm=()=>SFBridge.native?SFBridge.plug("NativePurchases"):null;function on(){if(!SFBridge.native)return!1;const e=window.Capacitor;try{if(e&&typeof e.isPluginAvailable=="function"&&!e.isPluginAvailable("NativePurchases"))return!0}catch{}return!bm()}function Y1(){const e=window.Capacitor;try{if(e&&typeof e.getPlatform=="function"){const a=e.getPlatform();if(a)return a==="ios"}}catch{}return/iPhone|iPad|iPod/.test(navigator.userAgent||"")||navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1}const Mi=()=>on()?null:bm(),nc=()=>SF_L[5620],ys=()=>on()?(Q(nc()),!0):!1;function vm(){try{const e=JSON.parse(SFStore.getItem(gm)||"null");return e&&typeof e=="object"?e:null}catch{return null}}function V1(){if(Pa.ready)return Pa.act;const e=vm();return e&&e.exp&&Date.parse(e.exp)+3*864e5>Date.now()?e.act||[]:[]}function _1(){if(!SFBridge.native&&!window.SF_WEB||Pa.noStore||on()&&!Y1())return{asport:!0,laser:!0};if(window.SFG&&SFG.on())return{asport:!0,laser:!0};if(window.SFW){const w=SFW.ent();if(w)return w}const e=V1(),a=t=>e.some(o=>o.indexOf("setfirst."+t+".")===0);return{asport:a("asport")||a("tutto"),laser:a("laser")||a("tutto")}}function zm(e){const a=_1();return e==="any"?a.asport||a.laser:!!a[e]}function ym(e){const a=tn.filter(t=>t.calc.includes(e)||t.gen.includes(e)).map(t=>t.id);return a.length?a.some(t=>t==="acc"||t==="qual"||t==="prog")?null:a.includes("cost")?"any":a.includes("tornio")||a.includes("fresa")?"asport":"laser":/^g_/.test(e)?"asport":null}function Jn(e){const a=ym(e);return!!a&&!zm(a)}const wm=e=>Jn(e)?' <span class="pill pro">Pro</span>':"";function Q1(e){const a=tn.find(t=>t.id===e);return!!a&&a.calc.concat(a.gen).some(Jn)}async function Ci(){const e=Mi();if(e)try{const a=await e.getPurchases({productType:"subs"}),t=(a&&a.purchases||[]).filter(n=>/^setfirst\./.test(n.productIdentifier||"")),o=Date.now(),i=t.filter(n=>!n.revocationDate&&!n.isUpgraded&&(n.isActive===!0||n.isActive==null&&n.expirationDate&&Date.parse(n.expirationDate)>o));Pa.had=t.length>0,Pa.act=[...new Set(i.map(n=>n.productIdentifier))],Pa.exp=i.reduce((n,l)=>l.expirationDate&&(!n||Date.parse(l.expirationDate)>Date.parse(n))?l.expirationDate:n,null),Pa.ready=!0,SFStore.setItem(gm,JSON.stringify({act:Pa.act,exp:Pa.exp,had:Pa.had,at:new Date().toISOString()}))}catch(a){console.warn(SF_L[5621],a)}}async function rc(){const e=Mi();if(e)try{const a=await e.getProducts({productIdentifiers:Z1,productType:"subs"}),t=a&&a.products||[];t.forEach(o=>{Pa.prods[o.identifier]=o}),Pa.noStore=t.length===0,Pa.err=""}catch{Pa.err=SF_L[5622]}}function K1(){const e=Mi();if(!e||Pa.inited)return;Pa.inited=!0;const a=vm();a&&(Pa.had=!!a.had),Promise.all([rc(),Ci()]).then(()=>C());try{e.addListener("transactionUpdated",()=>{Ci().then(()=>C())})}catch{}document.addEventListener("visibilitychange",()=>{document.hidden||Ci().then(()=>C())})}function xm(e,a){try{return new Intl.NumberFormat(SF_LANG==="en"?"en-GB":"it-IT",{style:"currency",currency:a||"EUR"}).format(e)}catch{return(+e).toFixed(2)+" "+(a||"€")}}function J1(e,a,t){const o=/\d(?:[\d.,\u00a0\u202f ']*\d)?/.exec(String(e||""));if(!o||!isFinite(a))return xm(a,t);const i=o[0],n=/([.,])(\d{1,3})$/.exec(i),l=n&&n[2].length!==3?n[1]:"",c=l?n[2].length:0,s=(i.replace(l?/[.,]\d+$/:/$/,"").match(/[^\d]/)||[""])[0],p=a.toFixed(c).split("."),u=p[0].replace(/\B(?=(\d{3})+(?!\d))/g,s);return e.slice(0,o.index)+u+(c?l+p[1]:"")+e.slice(o.index+i.length)}function $m(e,a){const t=Pa.prods["setfirst."+e+"."+a];if(t)return{v:+t.price,s:t.priceString,cur:t.currencyCode,intro:!!t.introductoryPrice};const o=j1[e][a==="anno"?1:0];return{v:o,s:xm(o,"EUR"),cur:"EUR",intro:!0}}const ws=()=>!Pa.had&&(!SFBridge.native||Object.values(Pa.prods).some(e=>e&&e.introductoryPrice)),sc=e=>{const a=/^setfirst\.(\w+)\.(mese|anno)$/.exec(e||""),t=a&&ic.find(o=>o.id===a[1]);return t?t.t+" · "+(a[2]==="anno"?SF_L[5623]:SF_L[5624]):""};function eb(e){return(window.SFG?SFG.lockTop():"")+eb_(e)}function eb_(e){const a=ym(e),t=a==="any"?SF_L[5625]:a==="laser"?SF_L[5626]:SF_L[5627];return`<div class="panel prolock"><span class="prolock-i">${U1}${SF_L[5628]}${t}${ws()&&!on()?SF_L[5630]:""}</p>${on()?`<div class="warnbox">${y(nc())}</div>`:""}${SF_L[5629]}`}function ab(){if(window.SF_WEB&&window.SFG)return window.SFW?SFW.webPlans(SFG.webPlans):SFG.webPlans();return ab_()+(window.SFG?SFG.statsBox():"")}function ab_(){if(!SFBridge.native)return`${SF_L[5631]}${zs}${SF_L[5632]}${zs}" target="_blank" rel="noopener">Privacy</a></p>`;const e=d.proPer||"anno",a=!!SFBridge.native,t=Pa.act[0],o=!!Pa.busy,i=!a||Object.keys(Pa.prods).length>0,n=e==="anno"&&i&&!Pa.err&&Date.now()<Date.parse("2027-01-01T00:00:00"),l=s=>{const p="setfirst."+s.id+"."+e,u=$m(s.id,e),g=$m(s.id,"mese"),f=e==="anno"&&g.v?Math.floor((1-u.v/(g.v*12))*100):0,b=Pa.act.includes(p),h=!Pa.had&&u.intro,v=!a||!!Pa.prods[p];return`<div class="procard${s.best?" best":""}${b?" mine":""}">
         ${s.best?(s.rec&&window.SFG?SFG.recBadge():SF_L[5633]):""}
         <div class="proh"><b>${s.t}</b><span class="note">${s.d}</span></div>
         <div class="proprice"><b>${v?y(u.s):"—"}</b><span>${e==="anno"?SF_L[5634]:SF_L[5635]}</span></div>
@@ -2779,6 +2779,204 @@ ${P}
     }, 1200);
     document.addEventListener('visibilitychange', function () { if (!document.hidden) { rerender(); maybeSummary(); } });
   });
+})();
+
+</script>
+<script>
+/* SetFirst web: account (Supabase, stesso progetto di HullHub) + abbonamento con Paddle.
+   Solo nella versione web (window.SF_WEB). Il piano arriva dal server (sf_my_plan), scritto dal webhook Paddle. */
+(function () {
+  if (!window.SF_WEB) return;
+  var SB = 'https://tyxcgamziaiihpthatvc.supabase.co';
+  var K = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5eGNnYW16aWFpaWhwdGhhdHZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIyNDkxODcsImV4cCI6MjEwNzgyNTE4N30.JR5iIe70f0xvYakRzMoYlF_bE6biOnH_gtY5UUmscHQ';
+  var PD = { token: 'live_ecd5982704ce89f18b62c7c32b0', prices: {
+    tutto: { m: 'pri_01m8715fqe2tnj0rrkkrnqbber', y: 'pri_01m87176qv8897r592fne0ee0x' },
+    asport: { m: 'pri_01m8718vc0r4p53n930cnenhdt', y: 'pri_01m8719tvd7ywdv2r03j3e0bwy' },
+    laser: { m: 'pri_01m871b4bmt90xxz05hsmczzw6', y: 'pri_01m871c6xzz35qszv7epfajbrg' } } };
+  var PRICE = { tutto: ['4,99 €', '39,99 €'], asport: ['2,99 €', '24,99 €'], laser: ['2,99 €', '24,99 €'] };
+  var KS = 'setfirst.sess.v1', KP = 'setfirst.plan.v1';
+  var L = {
+    it: { acc: 'Il tuo account', accS: 'Serve per abbonarti dal computer: il piano resta legato alla tua email e vale su tutti i tuoi browser.', mail: 'Email', pw: 'Password (almeno 8 caratteri)', in: 'Accedi', up: 'Crea account', forgot: 'Password dimenticata?', out: 'Esci', as: 'Sei entrato come', m: 'Mensile', y: 'Annuale', buy: 'Prova 14 giorni gratis', perM: '/mese', perY: '/anno', trialN: '14 giorni gratis, poi paghi con carta, PayPal o Apple Pay. Disdici prima e non paghi nulla. IVA inclusa.', mor: 'Pagamenti gestiti da Paddle.com, rivenditore autorizzato.', terms: 'Condizioni', refund: 'Rimborsi', wait: 'Pagamento ricevuto: attivo il piano…', ok: 'Piano attivo: ', none: 'Nessun piano attivo su questo account.', have: 'Hai già il piano ', till: ' fino al ', change: 'Per cambiare piano o disdire usa il link nella ricevuta di Paddle, o scrivi a info@setfirst.app.', loginFirst: 'Entra o crea l’account per continuare.', errMail: 'Scrivi un’email valida', errPw: 'La password deve avere almeno 8 caratteri', errLogin: 'Email o password non corretti', errExists: 'Questa email ha già un account: premi Accedi', sent: 'Ti abbiamo mandato un codice via email (guarda anche nello spam).', code: 'Codice dall’email', newpw: 'Nuova password (almeno 8 caratteri)', save: 'Salva la nuova password', back: 'Annulla', pwok: 'Password cambiata: sei dentro.', errCode: 'Codice non valido o scaduto', slow: 'Il pagamento è andato a buon fine; il piano si attiva entro qualche minuto. Se non lo vedi, ricarica la pagina.', iosT: 'Hai un iPhone o un iPad?', iosS: 'Puoi abbonarti anche dall’app (abbonamento separato, gestito da Apple).', ios: 'App per iPhone e iPad', plans: { tutto: 'Tutto incluso', asport: 'Asportazione', laser: 'Laser e lamiera' } },
+    en: { acc: 'Your account', accS: 'You need it to subscribe on a computer: the plan stays tied to your email and works in all your browsers.', mail: 'Email', pw: 'Password (at least 8 characters)', in: 'Sign in', up: 'Create account', forgot: 'Forgot password?', out: 'Sign out', as: 'Signed in as', m: 'Monthly', y: 'Yearly', buy: 'Try 14 days free', perM: '/month', perY: '/year', trialN: '14 days free, then you pay by card, PayPal or Apple Pay. Cancel before and you pay nothing. VAT included.', mor: 'Payments handled by Paddle.com, our authorised reseller.', terms: 'Terms', refund: 'Refunds', wait: 'Payment received: activating your plan…', ok: 'Plan active: ', none: 'No active plan on this account.', have: 'You already have ', till: ' until ', change: 'To change plan or cancel, use the link in your Paddle receipt or write to info@setfirst.app.', loginFirst: 'Sign in or create your account to continue.', errMail: 'Enter a valid email', errPw: 'The password needs at least 8 characters', errLogin: 'Wrong email or password', errExists: 'This email already has an account: press Sign in', sent: 'We emailed you a code (check spam too).', code: 'Code from the email', newpw: 'New password (at least 8 characters)', save: 'Save new password', back: 'Cancel', pwok: 'Password changed: you are signed in.', errCode: 'Invalid or expired code', slow: 'Payment done; the plan activates within a few minutes. If you do not see it, reload the page.', iosT: 'Have an iPhone or iPad?', iosS: 'You can also subscribe in the app (separate subscription, managed by Apple).', ios: 'iPhone and iPad app', plans: { tutto: 'All-inclusive', asport: 'Machining', laser: 'Laser & sheet metal' } }
+  };
+  function lang() { var l = (document.documentElement.lang || navigator.language || 'it').slice(0, 2); return L[l] ? l : 'en'; }
+  function T() { return L[lang()]; }
+  function g(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
+  function s(k, v) { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function esc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function toast(m) { try { if (window.SFX && SFX.toast) return SFX.toast(m); } catch (e) {} alert(m); }
+  function render() { try { if (window.SFX && SFX.render) SFX.render(); } catch (e) {} }
+
+  /* ---- sessione ---- */
+  function sess() { return g(KS); }
+  async function auth(path, body) {
+    var r = await fetch(SB + '/auth/v1/' + path, { method: 'POST', headers: { apikey: K, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    var j = {}; try { j = await r.json(); } catch (e) {}
+    if (!r.ok) { var e = new Error(j.error_description || j.msg || j.message || ('HTTP ' + r.status)); e.code = j.error_code || j.code || r.status; throw e; }
+    return j;
+  }
+  function keep(j) { if (j && j.access_token) { s(KS, { at: j.access_token, rt: j.refresh_token, exp: Date.now() + (j.expires_in || 3600) * 1000, email: (j.user || {}).email, id: (j.user || {}).id }); return true; } return false; }
+  async function fresh() {
+    var x = sess(); if (!x) return null;
+    if (Date.now() < x.exp - 60000) return x;
+    try { var j = await auth('token?grant_type=refresh_token', { refresh_token: x.rt }); keep(j); return sess(); }
+    catch (e) { if (e.code === 400 || e.code === 401 || /refresh/i.test(e.message)) { s(KS, null); s(KP, null); } return null; }
+  }
+  async function rpc(fn, args) {
+    var x = await fresh(); if (!x) throw new Error('nosession');
+    var r = await fetch(SB + '/rest/v1/rpc/' + fn, { method: 'POST', headers: { apikey: K, Authorization: 'Bearer ' + x.at, 'Content-Type': 'application/json' }, body: JSON.stringify(args || {}) });
+    if (!r.ok) throw new Error('rpc ' + r.status);
+    return r.json();
+  }
+
+  /* ---- piano ---- */
+  function plan() { var p = g(KP); if (!p || !p.plan) return null; if (p.exp && Date.parse(p.exp) < Date.now()) return null; return p; }
+  async function refreshPlan() {
+    if (!sess()) { s(KP, null); return null; }
+    try { var r = await rpc('sf_my_plan'); var p = Array.isArray(r) ? r[0] : r; s(KP, p && p.plan ? { plan: p.plan, exp: p.exp, status: p.status, at: Date.now() } : null); }
+    catch (e) { /* offline: tiene l'ultimo piano letto (con la sua scadenza) */ }
+    return plan();
+  }
+  function ent() {
+    var p = plan(); if (!p) return null;
+    if (p.plan === 'tutto') return { asport: !0, laser: !0 };
+    if (p.plan === 'asport') return { asport: !0, laser: !1 };
+    if (p.plan === 'laser') return { asport: !1, laser: !0 };
+    return null;
+  }
+
+  /* ---- Paddle ---- */
+  var pdReady = null, waiting = 0, forgot = null;
+  function paddle() {
+    if (pdReady) return pdReady;
+    pdReady = new Promise(function (ok, ko) {
+      var sc = document.createElement('script'); sc.src = 'https://cdn.paddle.com/paddle/v2/paddle.js';
+      sc.onload = function () {
+        try {
+          Paddle.Initialize({ token: PD.token, eventCallback: function (ev) {
+            if (ev && ev.name === 'checkout.completed') { waitPlan(); }
+          } });
+          ok(window.Paddle);
+        } catch (e) { ko(e); }
+      };
+      sc.onerror = function () { pdReady = null; ko(new Error('paddle')); };
+      document.head.appendChild(sc);
+    });
+    return pdReady;
+  }
+  async function waitPlan() {
+    toast(T().wait); waiting = Date.now();
+    for (var i = 0; i < 40; i++) {
+      await new Promise(function (r) { setTimeout(r, 3000); });
+      var p = await refreshPlan();
+      if (p) { waiting = 0; try { Paddle.Checkout.close(); } catch (e) {} toast(T().ok + T().plans[p.plan]); render(); return; }
+    }
+    waiting = 0; toast(T().slow); render();
+  }
+  async function buy(k, per) {
+    var x = await fresh();
+    if (!x) { toast(T().loginFirst); var f = document.getElementById('sfpmail'); if (f) { f.scrollIntoView({ block: 'center' }); f.focus(); } return; }
+    var p = plan(); if (p) { toast(T().have + T().plans[p.plan] + '. ' + T().change); return; }
+    try {
+      var P = await paddle();
+      P.Checkout.open({
+        items: [{ priceId: PD.prices[k][per], quantity: 1 }],
+        customer: { email: x.email },
+        customData: { app: 'setfirst', sf_uid: x.id, plan: k },
+        settings: { displayMode: 'overlay', locale: lang(), theme: 'light', allowLogout: false, showAddDiscounts: true }
+      });
+      try { window.SFG && SFG.T && fetch(SB + '/rest/v1/rpc/log_event', { method: 'POST', keepalive: true, headers: { apikey: K, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_ev: 'sf_web_checkout', p_aid: (g('setfirst.aid.v1') || {}).id || 'x', p_lang: lang(), p_ver: 'sfweb', p_plan: k + '_' + per, p_info: null }) }).catch(function () {}); } catch (e) {}
+    } catch (e) { toast('Paddle: ' + e.message); }
+  }
+
+  /* ---- interfaccia ---- */
+  function css() {
+    var st = document.createElement('style');
+    st.textContent = '.sfp-acc input{width:100%;height:42px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:0 10px;font:inherit;margin:4px 0}' +
+      '.sfp-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.sfp-row .btn{flex:1;justify-content:center;min-width:130px}' +
+      '.sfp-buy{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.sfp-buy .btn{justify-content:center;flex-direction:column;height:auto;padding:8px 6px;line-height:1.2}.sfp-buy .btn small{font-weight:400;opacity:.85}' +
+      '.sfp-ok{border:2px solid var(--brand,#D9621A)}.sfp-legal a{margin-right:12px}';
+    document.head.appendChild(st);
+  }
+  function accBox() {
+    var t = T(), x = sess();
+    if (x) {
+      var p = plan();
+      return '<div class="panel sfp-acc' + (p ? ' sfp-ok' : '') + '"><b>' + t.acc + '</b><p class="note" style="margin:4px 0">' + t.as + ' <b>' + esc(x.email) + '</b></p>' +
+        (p ? '<p style="margin:6px 0"><b>' + t.ok + esc(t.plans[p.plan] || p.plan) + '</b>' + (p.exp ? '<span class="note">' + t.till + new Date(p.exp).toLocaleDateString(lang()) + '</span>' : '') + '</p><p class="note">' + t.change + '</p>' : '<p class="note">' + t.none + '</p>') +
+        '<div class="sfp-row"><button class="btn ghost mini" data-act="sfpOut">' + t.out + '</button></div></div>';
+    }
+    if (forgot) return '<div class="panel sfp-acc"><b>' + t.acc + '</b><p class="note" style="margin:4px 0 6px">' + t.sent + ' <b>' + esc(forgot) + '</b></p>' +
+      '<input id="sfpcode" inputmode="numeric" autocomplete="one-time-code" placeholder="' + t.code + '"><input id="sfpnew" type="password" autocomplete="new-password" placeholder="' + t.newpw + '">' +
+      '<div class="sfp-row"><button class="btn primary mini" data-act="sfpReset">' + t.save + '</button><button class="btn ghost mini" data-act="sfpCancel">' + t.back + '</button></div></div>';
+    return '<div class="panel sfp-acc"><b>' + t.acc + '</b><p class="note" style="margin:4px 0 6px">' + t.accS + '</p>' +
+      '<input id="sfpmail" type="email" autocomplete="email" placeholder="' + t.mail + '"><input id="sfppw" type="password" autocomplete="current-password" placeholder="' + t.pw + '">' +
+      '<div class="sfp-row"><button class="btn primary mini" data-act="sfpIn">' + t.in + '</button><button class="btn ghost mini" data-act="sfpUp">' + t.up + '</button></div>' +
+      '<p class="note" style="margin:8px 0 0"><a href="#" data-act="sfpForgot">' + t.forgot + '</a></p></div>';
+  }
+  function buyRow(k) {
+    var t = T(), pr = PRICE[k];
+    return '<div class="sfp-buy"><button class="btn primary" data-act="sfpBuy" data-k="' + k + '" data-per="m"><span>' + t.m + ' · ' + pr[0] + t.perM + '</span><small>' + t.buy + '</small></button>' +
+      '<button class="btn ghost" data-act="sfpBuy" data-k="' + k + '" data-per="y"><span>' + t.y + ' · ' + pr[1] + t.perY + '</span><small>' + t.buy + '</small></button></div>';
+  }
+  function webPlans(orig) {
+    var html = orig();
+    var d = document.createElement('div'); d.innerHTML = html;
+    /* ogni scheda piano riceve i suoi pulsanti di acquisto */
+    var keys = { }; Object.keys(T().plans).forEach(function (k) { keys[(window.SFG && SFG.T && SFG.T.wPlans && SFG.T.wPlans[k] ? SFG.T.wPlans[k][0] : T().plans[k])] = k; });
+    d.querySelectorAll('.sfg-plan').forEach(function (c) { var n = (c.querySelector('.sfg-pn') || {}).textContent; var k = keys[n]; if (k && !plan()) c.insertAdjacentHTML('beforeend', buyRow(k)); });
+    /* il riquadro App Store diventa secondario; via la richiesta "avvisami" */
+    var pc = d.querySelector('.sfg-pc'); if (pc) pc.remove();
+    var ios = d.querySelector('.sfg-buy');
+    if (ios) { var a = ios.querySelector('[data-act=sfgIos]'); if (a) { a.className = 'btn ghost'; a.textContent = T().ios; } ios.insertAdjacentHTML('afterbegin', '<b>' + T().iosT + '</b><p class="note" style="margin:4px 0 8px">' + T().iosS + '</p>'); var n = ios.querySelector('p.note:not(:first-of-type)'); }
+    var top = d.querySelector('.sfg-h1'); var t = T();
+    var after = d.querySelector('.sfg-plan.main') || d.querySelector('.sfg-plan') || d.querySelector('.sfg-why') || d.querySelector('.sfg-h1 + .note');
+    var box = accBox() + '<p class="note">' + t.trialN + '<br>' + t.mor + '</p><p class="note sfp-legal"><a href="https://app.setfirst.app/termini.html" target="_blank" rel="noopener">' + t.terms + '</a><a href="https://app.setfirst.app/rimborsi.html" target="_blank" rel="noopener">' + t.refund + '</a></p>';
+    if (after) after.insertAdjacentHTML('afterend', box); else if (top) top.insertAdjacentHTML('afterend', box); else d.insertAdjacentHTML('afterbegin', box);
+    return d.innerHTML;
+  }
+
+  document.addEventListener('click', async function (e) {
+    var b = e.target.closest('[data-act^="sfp"]'); if (!b) return;
+    e.preventDefault(); e.stopPropagation();
+    var t = T(), act = b.dataset.act;
+    if (act === 'sfpBuy') return buy(b.dataset.k, b.dataset.per);
+    if (act === 'sfpCancel') { forgot = null; render(); return; }
+    if (act === 'sfpReset') {
+      var code = ((document.getElementById('sfpcode') || {}).value || '').replace(/\s/g, ''), np = (document.getElementById('sfpnew') || {}).value || '';
+      if (np.length < 8) return toast(t.errPw);
+      b.disabled = true;
+      try {
+        var j = await auth('verify', { type: 'recovery', email: forgot, token: code }); keep(j);
+        var r = await fetch(SB + '/auth/v1/user', { method: 'PUT', headers: { apikey: K, Authorization: 'Bearer ' + j.access_token, 'Content-Type': 'application/json' }, body: JSON.stringify({ password: np }) });
+        if (!r.ok) throw new Error('pw ' + r.status);
+        forgot = null; toast(t.pwok); await refreshPlan(); render();
+      } catch (err) { toast(/token|otp|expired|invalid/i.test(err.message) ? t.errCode : err.message); } finally { b.disabled = false; }
+      return;
+    }
+    if (act === 'sfpOut') { var x = sess(); s(KS, null); s(KP, null); if (x) fetch(SB + '/auth/v1/logout', { method: 'POST', headers: { apikey: K, Authorization: 'Bearer ' + x.at } }).catch(function () {}); render(); return; }
+    var em = ((document.getElementById('sfpmail') || {}).value || '').trim().toLowerCase(), pw = (document.getElementById('sfppw') || {}).value || '';
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) return toast(t.errMail);
+    if (act === 'sfpForgot') { try { await auth('recover', { email: em }); forgot = em; toast(t.sent); render(); } catch (err) { toast(err.message); } return; }
+    if (pw.length < 8) return toast(t.errPw);
+    b.disabled = true;
+    try {
+      if (act === 'sfpIn') { keep(await auth('token?grant_type=password', { email: em, password: pw })); }
+      else {
+        var j = await auth('signup', { email: em, password: pw, data: { app: 'setfirst' } });
+        if (!keep(j)) { try { keep(await auth('token?grant_type=password', { email: em, password: pw })); } catch (e2) { throw Object.assign(new Error(t.errExists), { code: 'exists' }); } }
+      }
+      await refreshPlan(); render();
+    } catch (err) {
+      toast(/invalid|credentials/i.test(err.message) ? t.errLogin : /registered|exists/i.test(err.message) ? t.errExists : err.message);
+    } finally { b.disabled = false; }
+  }, true);
+
+  window.SFW = { ent: ent, plan: plan, refresh: refreshPlan, webPlans: webPlans, sess: sess, waiting: function () { return !!waiting; } };
+  css();
+  refreshPlan().then(function (p) { if (p) render(); });
+  setInterval(function () { if (sess() && !document.hidden) refreshPlan().then(function () {}); }, 10 * 60 * 1000);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden && sess()) refreshPlan().then(render); });
 })();
 
 </script>
