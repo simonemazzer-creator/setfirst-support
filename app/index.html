@@ -3211,6 +3211,19 @@ ${P}
     } catch (e) { toast(e.message); } finally { b.disabled = false; }
   }
   /* link app.setfirst.app/app/?code=SF-XXXX-XXXX: tiene il codice e apre la pagina dei piani */
+  /* link app.setfirst.app/app/?login: apre «Il tuo account» (dopo la prima configurazione, se c'è) */
+  function loginFromUrl() {
+    try {
+      var u = new URL(location.href); if (!u.searchParams.has('login')) return;
+      u.searchParams.delete('login'); history.replaceState(null, '', u.pathname + (u.search || '') + u.hash);
+      var n = 0, go = function () {
+        if (document.querySelector('.wiz') && n++ < 600) return setTimeout(go, 500);
+        var x = document.createElement('button'); x.dataset.act = 'proOpen'; x.style.display = 'none'; document.body.appendChild(x); x.click(); x.remove();
+        setTimeout(function () { var m = document.getElementById('sfpmail'); if (m) { m.scrollIntoView({ block: 'center' }); m.focus(); } }, 500);
+      };
+      setTimeout(go, 900);
+    } catch (e) {}
+  }
   function giftFromUrl() {
     try {
       var u = new URL(location.href), c = u.searchParams.get('code'); if (!c) return;
@@ -3464,7 +3477,7 @@ ${P}
   css();
   refreshPlan().then(function (p) { if (p) render(); });
   checkAdm().then(function (a) { if (a) render(); });
-  giftFromUrl();
+  giftFromUrl(); loginFromUrl();
   setInterval(function () { if (sess() && !document.hidden) refreshPlan().then(function () {}); }, 10 * 60 * 1000);
   document.addEventListener('visibilitychange', function () { if (!document.hidden && sess()) refreshPlan().then(render); });
 })();
