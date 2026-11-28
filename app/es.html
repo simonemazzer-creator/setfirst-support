@@ -2970,43 +2970,15 @@ ${P}
     return '<div class="sfp-box sfp-chk"><span class="sfp-lbl">Da controllare</span>' + out.map(function (x) { return '<div class="sfp-ck ' + x[0] + '"><i>' + ic[x[0]] + '</i><span>' + x[1] + '</span></div>'; }).join('') + '</div>';
   }
   async function statsSheet(days) {
-    var seg = '<div class="sfp-seg">' + [[1, 'Oggi'], [7, '7 giorni'], [30, '30 giorni'], [90, '90 giorni']].map(function (x) { return '<button class="btn mini' + (x[0] === days ? ' primary' : ' ghost') + '" data-act="sfpStats" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div>';
-    if (document.getElementById('sfpbody') && document.querySelector('.sfp-sheet h2').textContent === 'Contatori') body(seg + '<p class="note">Carico…</p>'); else sheet('Contatori', seg + '<p class="note">Carico…</p>');
+    days = days || 7;
+    if (!(document.getElementById('sfpbody') && document.querySelector('.sfp-sheet h2').textContent === 'Contatori')) sheet('Contatori', '<div id="sfctr"></div>'); else if (!document.getElementById('sfctr')) body('<div id="sfctr"></div>');
+    var el = document.getElementById('sfctr');
+    var opt = { name: 'SetFirst', host: 'setfirst.app', brand: '#D9621A', days: days, onDays: statsSheet, clk: CLK, src: SRC, trialTitle: 'Prova gratuita sull’iPhone (14 giorni)', foot: 'Sono esclusi i tuoi dispositivi (anche di HullHub) e il tuo account. Gli abbonamenti fatti sull’iPhone li gestisce Apple: li vedi in App Store Connect › Tendenze.' };
+    CTR.render(el, 'load', opt);
     markMine();
     var j = null; try { j = await rpc('sf_stats', { p_days: days }); } catch (e) {}
-    if (!document.getElementById('sfpbody')) return;
-    if (!j) return body(seg + '<div class="panel">Contatori non disponibili: controlla di essere entrato con il tuo account.</div>');
-    var k = function (l, v, sub) { return '<div class="sfp-kpi"><span>' + l + '</span><b>' + n(v) + '</b>' + (sub ? '<small>' + sub + '</small>' : '') + '</div>'; };
-    var row = function (l, v) { return '<div class="sfp-li"><span>' + l + '</span><b>' + n(v) + '</b></div>'; };
-    var list = function (t, a, f) { return a && a.length ? '<div class="sfp-box"><span class="sfp-lbl">' + t + '</span>' + a.map(f).join('') + '</div>' : ''; };
-    var pd = j.per_day || [], mx = Math.max(1, Math.max.apply(null, pd.map(function (x) { return Math.max(x.s, x.w, x.i); }).concat([1])));
-    var bars = pd.length > 1 ? '<div class="sfp-box"><span class="sfp-lbl">Giorno per giorno</span><div class="sfp-leg"><i class="c1"></i>sito <i class="c2"></i>app web <i class="c3"></i>iPhone</div><div class="sfp-bars">' + pd.slice(-31).map(function (x) {
-      var h = function (v, c) { return '<span class="' + c + '" title="' + v + '" style="height:' + Math.max(2, Math.round(v / mx * 70)) + 'px"></span>'; };
-      return '<div class="sfp-day" title="' + fd(x.g) + ': sito ' + x.s + ', web ' + x.w + ', iPhone ' + x.i + '"><div class="sfp-col">' + h(x.s, 'c1') + h(x.w, 'c2') + h(x.i, 'c3') + '</div><small>' + x.g.slice(8) + '</small></div>';
-    }).join('') + '</div></div>' : '';
-    var ends = function (a) { return (a || []).map(function (x) { return fd(x.e) + (x.plan ? ' · ' + x.plan : '') + (x.n > 1 ? ' (' + x.n + ')' : ''); }).join(', '); };
-    body(seg + checks(j, days) +
-      '<div class="sfp-kpis">' +
-      k('Visite al sito', j.site, 'persone diverse') +
-      k('App web aperta', j.web_open, n(j.web_new) + ' nuovi') +
-      k('App iPhone aperta', j.ios_open, n(j.ios_new) + ' nuove installazioni') +
-      k('Account creati', j.accounts, n(j.accounts_all) + ' in tutto') +
-      '</div>' +
-      '<div class="sfp-box"><span class="sfp-lbl">Abbonamenti dal sito (Paddle)</span>' +
-      row('Nuovi nel periodo', j.pd_new) + row('In prova gratuita adesso', j.pd_trial) +
-      (j.pd_trial_end && j.pd_trial_end.length ? '<p class="note" style="margin:2px 0 6px">Finiscono la prova: ' + ends(j.pd_trial_end) + '</p>' : '') +
-      row('Paganti attivi', j.pd_paid) + row('Prova finita senza pagare (sempre)', j.pd_lost) + row('Regali attivi (codici usati)', j.gift_on) + '</div>' +
-      '<div class="sfp-box"><span class="sfp-lbl">Prova gratuita sull’iPhone (14 giorni)</span>' +
-      row('Iniziate nel periodo', j.trials) + row('In corso adesso', j.trials_on) +
-      (j.trials_end && j.trials_end.length ? '<p class="note" style="margin:2px 0 0">Finiscono: ' + ends(j.trials_end) + '</p>' : '') + '</div>' +
-      '<div class="sfp-box"><span class="sfp-lbl">Passaggi verso l’acquisto</span>' +
-      row('Hanno visto i piani', j.paywall) + row('Hanno aperto il pagamento sul sito', j.checkout) + row('Hanno premuto «Abbonati» sull’iPhone', j.ios_buy) + row('Acquisti riusciti sull’iPhone', j.ios_ok) + row('Dal computer sono andati all’App Store', j.to_store) + row('Messaggi «Cosa ti manca?»', j.req) + '</div>' +
-      bars +
-      list('Da dove arrivano al sito', j.site_src, function (x) { return row(esc(SRC[x.src] || x.src), x.n); }) +
-      list('Cosa cliccano sul sito', j.site_clicks, function (x) { return row(esc(CLK[x.k] || x.k), x.n); }) +
-      list('Da dove arrivano all’app web (nuovi)', j.web_src, function (x) { return row(esc(SRC[x.src] || x.src), x.n); }) +
-      '<div class="sfp-box"><span class="sfp-lbl">Codici regalo</span>' + row('Liberi', j.codes_free) + row('Usati', j.codes_used) + '</div>' +
-      '<p class="note">Sono esclusi i tuoi dispositivi (' + n(j.mine) + ' segnati, anche di HullHub) e il tuo account. Gli abbonamenti fatti sull’iPhone li gestisce Apple: li vedi in App Store Connect › Tendenze.</p>');
+    if (!document.contains(el)) return;
+    CTR.render(el, j, opt);
   }
 
   var PN = { tutto: 'Tutto incluso', asport: 'Asportazione', laser: 'Laser e lamiera' }, CL = null;
@@ -3134,5 +3106,148 @@ ${P}
 
 </script>
 
+<script>/*CTR-BEGIN*/
+/* CONTATORI v1 — stesso pannello per SetFirst e HullHub (file identico nelle due app).
+   CTR.render(el, j, opt): j = dati del server (stessi nomi nelle due app), opt = {name, host, days, onDays, clk, src, foot, codes}
+   Il grafico è un SVG a linee con tocco/hover sul giorno. */
+(function () {
+  if (window.CTR) return;
+  var CSS = '.ctr{font-size:15px}.ctr *{box-sizing:border-box}' +
+    '.ctr-seg{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}.ctr-seg button{font:inherit;font-weight:600;font-size:14px;padding:8px 14px;border-radius:12px;border:1px solid var(--line,#d9dcd8);background:var(--surface,#fff);color:inherit;cursor:pointer}.ctr-seg button.on{background:var(--ctr-brand);border-color:var(--ctr-brand);color:#fff;box-shadow:0 4px 12px -4px var(--ctr-brand)}' +
+    '.ctr-box{border:1px solid var(--line,#d9dcd8);border-radius:14px;padding:11px 13px;background:var(--surface2,var(--bg,#f4f5f3));margin-top:10px}' +
+    '.ctr-lbl{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.07em;opacity:.7;margin-bottom:6px;font-weight:700}' +
+    '.ctr-kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.ctr-kpi{border:1px solid var(--line,#d9dcd8);border-radius:14px;padding:11px 13px;display:flex;flex-direction:column;background:var(--surface2,var(--bg,#f4f5f3))}.ctr-kpi span{font-size:13px;opacity:.75}.ctr-kpi b{font-size:30px;line-height:1.15;font-variant-numeric:tabular-nums}.ctr-kpi small{opacity:.7;font-size:13px}' +
+    '.ctr-li{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line,#d9dcd8)}.ctr-li:last-child{border-bottom:0}.ctr-li b{font-variant-numeric:tabular-nums}' +
+    '.ctr-note{font-size:13px;opacity:.75;margin:4px 0}' +
+    '.ctr-chk{border:2px solid var(--ctr-brand)}.ctr-ck{display:flex;gap:9px;align-items:flex-start;padding:9px 11px;margin:6px 0;border-radius:11px;font-size:14px;line-height:1.38}.ctr-ck i{font-style:normal}.ctr-ck.bad{background:rgba(214,40,40,.13)}.ctr-ck.warn{background:rgba(230,160,20,.16)}.ctr-ck.good{background:rgba(40,160,90,.14)}.ctr-ck.info{background:rgba(90,110,140,.12)}' +
+    '.ctr-leg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;margin:2px 0 6px}.ctr-leg span{display:inline-flex;align-items:center;gap:6px}.ctr-leg i{width:10px;height:10px;border-radius:3px;display:inline-block}.ctr-leg b{font-variant-numeric:tabular-nums}' +
+    '.ctr-tip{font-size:13px;min-height:19px;margin:0 0 4px;opacity:.85;font-variant-numeric:tabular-nums}' +
+    '.ctr-svg{width:100%;height:auto;display:block;touch-action:pan-y;user-select:none;-webkit-user-select:none}.ctr-svg text{font-size:10px;fill:currentColor;opacity:.55}';
+  var DATA = {};
+  var COL = { s: '#E2682A', w: '#3E86D6', i: '#3BA372' };
+  function css() { if (document.getElementById('ctr-css')) return; var st = document.createElement('style'); st.id = 'ctr-css'; st.textContent = CSS; document.head.appendChild(st); }
+  function num(v) { return Number(v || 0).toLocaleString('it-IT'); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function ymd(off) { return new Date(Date.now() + (off || 0) * 864e5).toLocaleDateString('sv-SE', { timeZone: 'Europe/Rome' }); }
+  function fd(s) { var d = new Date(String(s).slice(0, 10) + 'T12:00:00'); return d.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' }); }
+  function sum(a) { return (a || []).reduce(function (t, x) { return t + Number(x.n || 0); }, 0); }
+
+  /* tutti i giorni del periodo, anche quelli a zero */
+  function series(pd, days) {
+    var m = {}; (pd || []).forEach(function (x) { m[x.g] = x; });
+    var n = Math.max(days, 2), out = [];
+    for (var k = n - 1; k >= 0; k--) { var g = ymd(-k), x = m[g] || {}; out.push({ g: g, s: +x.s || 0, w: +x.w || 0, i: +x.i || 0 }); }
+    return out;
+  }
+
+  function chart(pd, days) {
+    var D = series(pd, days), wk = D.length > 45; if (D.length < 2) return '';
+    if (wk) { var A = []; for (var a = D.length % 7; a < D.length; a += 7) { var c = D.slice(a, a + 7); A.push({ g: c[0].g, e: c[c.length - 1].g, s: c.reduce(function (t, x) { return t + x.s; }, 0), w: c.reduce(function (t, x) { return t + x.w; }, 0), i: c.reduce(function (t, x) { return t + x.i; }, 0) }); } if (D.length % 7) { var c0 = D.slice(0, D.length % 7); A.unshift({ g: c0[0].g, e: c0[c0.length - 1].g, s: c0.reduce(function (t, x) { return t + x.s; }, 0), w: c0.reduce(function (t, x) { return t + x.w; }, 0), i: c0.reduce(function (t, x) { return t + x.i; }, 0) }); } D = A; }
+    var W = 340, H = 150, L = 26, R = 8, T = 8, B = 20, pw = W - L - R, ph = H - T - B;
+    var mx = Math.max(1, Math.max.apply(null, D.map(function (x) { return Math.max(x.s, x.w, x.i); })));
+    var step = mx <= 4 ? 1 : mx <= 10 ? 2 : mx <= 25 ? 5 : mx <= 50 ? 10 : mx <= 100 ? 20 : mx <= 250 ? 50 : 100; var top = Math.ceil(mx / step) * step;
+    var X = function (k) { return L + (D.length === 1 ? pw / 2 : k * pw / (D.length - 1)); }, Y = function (v) { return T + ph - v / top * ph; };
+    var grid = '', g; for (g = 0; g <= top; g += step) { if (top / step > 5 && (g / step) % 2) continue; grid += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(g).toFixed(1) + '" y2="' + Y(g).toFixed(1) + '" stroke="currentColor" stroke-opacity=".1"/><text x="' + (L - 4) + '" y="' + (Y(g) + 3).toFixed(1) + '" text-anchor="end">' + g + '</text>'; }
+    var nl = Math.min(D.length, D.length <= 8 ? D.length : 6), xl = '';
+    for (var q = 0; q < nl; q++) { var k = Math.round(q * (D.length - 1) / (nl - 1 || 1)); xl += '<text x="' + X(k).toFixed(1) + '" y="' + (H - 5) + '" text-anchor="' + (k === 0 ? 'start' : k === D.length - 1 ? 'end' : 'middle') + '">' + (D.length <= 8 ? D[k].g.slice(8) : fd(D[k].g)) + '</text>'; }
+    var line = function (key) { return D.map(function (x, k) { return (k ? 'L' : 'M') + X(k).toFixed(1) + ' ' + Y(x[key]).toFixed(1); }).join(''); };
+    var area = line('s') + 'L' + X(D.length - 1).toFixed(1) + ' ' + Y(0) + 'L' + X(0).toFixed(1) + ' ' + Y(0) + 'Z';
+    var dots = D.length <= 31 ? D.map(function (x, k) { return '<circle cx="' + X(k).toFixed(1) + '" cy="' + Y(x.s).toFixed(1) + '" r="2.2" fill="' + COL.s + '"/>'; }).join('') : '';
+    var tot = { s: 0, w: 0, i: 0 }; D.forEach(function (x) { tot.s += x.s; tot.w += x.w; tot.i += x.i; });
+    var id = 'ctr' + Math.random().toString(36).slice(2, 7); DATA[id] = D;
+    return '<div class="ctr-box"><span class="ctr-lbl">' + (wk ? 'Settimana per settimana' : 'Giorno per giorno') + '</span>' +
+      '<div class="ctr-leg"><span><i style="background:' + COL.s + '"></i>sito <b>' + num(tot.s) + '</b></span><span><i style="background:' + COL.w + '"></i>app web <b>' + num(tot.w) + '</b></span><span><i style="background:' + COL.i + '"></i>iPhone <b>' + num(tot.i) + '</b></span></div>' +
+      '<div class="ctr-tip" id="' + id + 't">Tocca il grafico per vedere ' + (wk ? 'una settimana' : 'un giorno') + '</div>' +
+      '<svg class="ctr-svg" id="' + id + '" viewBox="0 0 ' + W + ' ' + H + '" data-ctr=\'' + JSON.stringify({ L: L, pw: pw, T: T, ph: ph, n: D.length }) + '\'>' +
+      '<defs><linearGradient id="' + id + 'g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + COL.s + '" stop-opacity=".28"/><stop offset="1" stop-color="' + COL.s + '" stop-opacity="0"/></linearGradient></defs>' +
+      grid + xl + '<path d="' + area + '" fill="url(#' + id + 'g)"/>' +
+      '<path d="' + line('w') + '" fill="none" stroke="' + COL.w + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>' +
+      '<path d="' + line('i') + '" fill="none" stroke="' + COL.i + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>' +
+      '<path d="' + line('s') + '" fill="none" stroke="' + COL.s + '" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>' + dots +
+      '<line class="ctr-cur" x1="0" x2="0" y1="' + T + '" y2="' + (T + ph) + '" stroke="currentColor" stroke-opacity=".35" stroke-dasharray="3 3" style="display:none"/>' +
+      '<rect x="' + L + '" y="0" width="' + pw + '" height="' + H + '" fill="transparent"/></svg></div>';
+  }
+  function bindChart(el) {
+    Array.prototype.forEach.call(el.querySelectorAll('svg.ctr-svg'), function (sv) {
+      var cfg = JSON.parse(sv.getAttribute('data-ctr')), D = DATA[sv.id], tip = document.getElementById(sv.id + 't'), cur = sv.querySelector('.ctr-cur');
+      var show = function (ev) {
+        var r = sv.getBoundingClientRect(), x = (ev.clientX - r.left) / r.width * 340, k = Math.round((x - cfg.L) / cfg.pw * (cfg.n - 1)); k = Math.max(0, Math.min(cfg.n - 1, k));
+        var d = D[k], px = cfg.L + k * cfg.pw / (cfg.n - 1); cur.setAttribute('x1', px); cur.setAttribute('x2', px); cur.style.display = '';
+        tip.innerHTML = '<b>' + (d.e ? fd(d.g) + ' – ' + fd(d.e) : fd(d.g)) + '</b> · <span style="color:' + COL.s + '">sito ' + d.s + '</span> · <span style="color:' + COL.w + '">app web ' + d.w + '</span> · <span style="color:' + COL.i + '">iPhone ' + d.i + '</span>';
+      };
+      sv.addEventListener('pointerdown', show); sv.addEventListener('pointermove', function (e) { if (e.pointerType === 'mouse' || e.buttons) show(e); });
+    });
+  }
+
+  /* «Da controllare»: rosso = problema, arancio = attenzione, verde = bene */
+  function checks(j, days, opt) {
+    var out = [], add = function (lv, t) { out.push([lv, t]); };
+    var soon = ymd(3), dd = function (a) { return (a || []).filter(function (x) { return x.e <= soon; }); }, n = num;
+    if (j.pd_new > 0) add('good', n(j.pd_new) + (j.pd_new == 1 ? ' nuovo abbonamento' : ' nuovi abbonamenti') + ' dal sito nel periodo.');
+    if (j.ap_new > 0) add('good', n(j.ap_new) + (j.ap_new == 1 ? ' nuovo abbonamento' : ' nuovi abbonamenti') + ' dall’iPhone (Apple) nel periodo.');
+    if (j.ios_ok > 0) add('good', n(j.ios_ok) + (j.ios_ok == 1 ? ' acquisto riuscito' : ' acquisti riusciti') + ' sull’iPhone.');
+    if (j.checkout > 0 && !(j.pd_new > 0)) add('bad', n(j.checkout) + (j.checkout == 1 ? ' ha aperto' : ' hanno aperto') + ' il pagamento sul sito ma nessuno ha completato. Guarda su Paddle se ci sono pagamenti rifiutati o abbandonati.');
+    else if (j.checkout > (j.pd_new || 0) + 2) add('warn', n(j.checkout - j.pd_new) + ' persone hanno aperto il pagamento senza completarlo.');
+    if (j.ios_buy > (j.ios_ok || 0)) add('bad', n(j.ios_buy - (j.ios_ok || 0)) + (j.ios_buy - (j.ios_ok || 0) == 1 ? ' ha premuto' : ' hanno premuto') + ' «Abbonati» sull’iPhone ma l’acquisto non è andato a buon fine (annullato o errore).');
+    if (j.paywall >= 5 && !(j.checkout > 0) && !(j.ios_buy > 0)) add('warn', n(j.paywall) + ' persone hanno visto i piani ma nessuno ha provato a pagare: prezzo o testo dei piani da rivedere.');
+    var te = dd(j.pd_trial_end).concat(dd(j.ap_trial_end), dd(j.trials_end)), ten = sum(te);
+    if (ten) add('warn', n(ten) + (ten == 1 ? ' prova gratuita finisce' : ' prove gratuite finiscono') + ' entro 3 giorni (' + te.map(function (x) { return fd(x.e); }).join(', ') + '): è il momento in cui decidono se pagare.');
+    if (j.req > 0) add('warn', n(j.req) + (j.req == 1 ? ' messaggio' : ' messaggi') + ' «Cosa ti manca?» da leggere: sono idee di chi usa l’app.');
+    var src = j.site_src || [], ig = sum(src.filter(function (x) { return /insta|^ig/i.test(x.src); })), fb = sum(src.filter(function (x) { return /facebook|^fb|meta/i.test(x.src); }));
+    if (ig || fb) add('info', 'Visite dalle pubblicità: ' + n(ig) + ' da Instagram, ' + n(fb) + ' da Facebook.');
+    else add('warn', 'Nessuna visita al sito da Instagram o Facebook nel periodo: controlla che le inserzioni stiano girando.');
+    if (j.site >= 20 && j.web_new < j.site * 0.05) add('warn', 'Su ' + n(j.site) + ' visite al sito solo ' + n(j.web_new) + ' hanno aperto l’app: il sito non convince a provarla.');
+    if (j.web_new >= 10 && !(j.accounts > 0)) add('warn', n(j.web_new) + ' nuovi sull’app web ma nessun account creato.');
+    var pd = j.per_day || [], y = pd.filter(function (x) { return x.g === ymd(-1); })[0];
+    if (days >= 7 && pd.length > 3) { var avg = pd.reduce(function (s, x) { return s + (+x.s || 0); }, 0) / Math.max(days, 1); if (avg >= 3 && (!y || !y.s)) add('bad', 'Ieri nessuna visita al sito, di solito sono ' + Math.round(avg) + ' al giorno: controlla che ' + opt.host + ' si apra.'); }
+    if (j.codes_free != null && !(j.codes_free > 0)) add('info', 'Non hai codici regalo liberi: creane qualcuno se ti servono.');
+    var ord = { bad: 0, warn: 1, good: 2, info: 3 }; out.sort(function (a, b) { return ord[a[0]] - ord[b[0]]; });
+    if (!out.some(function (x) { return x[0] === 'bad' || x[0] === 'warn'; })) out.unshift(['good', 'Niente di strano nel periodo.']);
+    var ic = { bad: '⛔', warn: '⚠️', good: '✅', info: 'ℹ️' };
+    return '<div class="ctr-box ctr-chk"><span class="ctr-lbl">Da controllare</span>' + out.map(function (x) { return '<div class="ctr-ck ' + x[0] + '"><i>' + ic[x[0]] + '</i><span>' + x[1] + '</span></div>'; }).join('') + '</div>';
+  }
+
+  function seg(days) {
+    return '<div class="ctr-seg">' + [[1, 'Oggi'], [7, '7 giorni'], [30, '30 giorni'], [90, '90 giorni']].map(function (x) { return '<button type="button" class="' + (x[0] === days ? 'on' : '') + '" data-ctr-days="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div>';
+  }
+
+  function render(el, j, opt) {
+    css(); opt = opt || {}; var days = opt.days || 7;
+    el.classList.add('ctr'); el.style.setProperty('--ctr-brand', opt.brand || '#D9621A');
+    if (!el.__ctr) { el.__ctr = 1; el.addEventListener('click', function (e) { var b = e.target.closest('[data-ctr-days]'); if (b && el.__ctrOn) { e.preventDefault(); e.stopPropagation(); el.__ctrOn(+b.getAttribute('data-ctr-days')); } }); }
+    el.__ctrOn = opt.onDays;
+    if (j === 'load') { el.innerHTML = seg(days) + '<p class="ctr-note">Carico…</p>'; return; }
+    if (!j) { el.innerHTML = seg(days) + '<div class="ctr-box">Contatori non disponibili: controlla di essere entrato con il tuo account.</div>'; return; }
+    var k = function (l, v, sub) { return '<div class="ctr-kpi"><span>' + l + '</span><b>' + num(v) + '</b>' + (sub ? '<small>' + sub + '</small>' : '') + '</div>'; };
+    var row = function (l, v) { return '<div class="ctr-li"><span>' + l + '</span><b>' + num(v) + '</b></div>'; };
+    var box = function (t, inner) { return inner ? '<div class="ctr-box"><span class="ctr-lbl">' + t + '</span>' + inner + '</div>' : ''; };
+    var list = function (t, a, f) { return a && a.length ? box(t, a.map(f).join('')) : ''; };
+    var ends = function (a) { return (a || []).map(function (x) { return fd(x.e) + (x.plan ? ' · ' + esc(x.plan) : '') + (x.n > 1 ? ' (' + x.n + ')' : ''); }).join(', '); };
+    var endP = function (a, l) { return a && a.length ? '<p class="ctr-note">' + l + ends(a) + '</p>' : ''; };
+    var SRC = Object.assign({ diretto: 'diretto (link o digitato)' }, opt.src || {}), CLK = opt.clk || {};
+    var ap = j.ap_new != null ? box('Abbonamenti dall’iPhone (Apple)', row('Nuovi nel periodo', j.ap_new) + row('In prova gratuita adesso', j.ap_trial) + endP(j.ap_trial_end, 'Finiscono la prova: ') + row('Paganti attivi', j.ap_paid) + row('Prova finita senza pagare (sempre)', j.ap_lost)) : '';
+    var use = (j.boats != null || j.ai != null) ? box('Uso dell’app', (j.boats != null ? row('Barche create', j.boats) : '') + (j.ai != null ? row('Usi dell’assistente IA', j.ai) : '')) : '';
+    el.innerHTML = seg(days) + checks(j, days, opt) +
+      '<div class="ctr-kpis">' +
+      k('Visite al sito', j.site, 'persone diverse') +
+      k('App web aperta', j.web_open, num(j.web_new) + ' nuovi') +
+      k('App iPhone aperta', j.ios_open, num(j.ios_new) + ' nuove installazioni') +
+      k('Account creati', j.accounts, num(j.accounts_all) + ' in tutto') + '</div>' +
+      box('Abbonamenti dal sito (Paddle)', row('Nuovi nel periodo', j.pd_new) + row('In prova gratuita adesso', j.pd_trial) + endP(j.pd_trial_end, 'Finiscono la prova: ') + row('Paganti attivi', j.pd_paid) + row('Prova finita senza pagare (sempre)', j.pd_lost) + row('Regali attivi (codici usati)', j.gift_on)) +
+      ap +
+      box(opt.trialTitle || 'Prova gratuita sul dispositivo (14 giorni)', row('Iniziate nel periodo', j.trials) + row('In corso adesso', j.trials_on) + endP(j.trials_end, 'Finiscono: ')) +
+      box('Passaggi verso l’acquisto', row('Hanno visto i piani', j.paywall) + row('Hanno aperto il pagamento sul sito', j.checkout) + row('Hanno premuto «Abbonati» sull’iPhone', j.ios_buy) + row('Acquisti riusciti sull’iPhone', j.ios_ok) + row('Dal computer sono andati all’App Store', j.to_store) + row('Messaggi «Cosa ti manca?»', j.req)) +
+      use + chart(j.per_day, days) +
+      list('Da dove arrivano al sito', j.site_src, function (x) { return row(esc(SRC[x.src] || x.src), x.n); }) +
+      list('Cosa cliccano sul sito', j.site_clicks, function (x) { return row(esc(CLK[x.k] || x.k), x.n); }) +
+      list('Da dove arrivano all’app web (nuovi)', j.web_src, function (x) { return row(esc(SRC[x.src] || x.src), x.n); }) +
+      (j.codes_free != null ? box('Codici regalo', row('Liberi', j.codes_free) + row('Usati', j.codes_used)) : '') +
+      '<p class="ctr-note" style="margin-top:12px">' + (opt.foot || '') + (j.mine != null ? ' Dispositivi tuoi segnati: ' + num(j.mine) + '.' : '') + '</p>';
+    bindChart(el);
+  }
+  window.CTR = { render: render, VER: 1 };
+})();
+
+/*CTR-END*/</script>
 </body>
 </html>
